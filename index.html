@@ -10,13 +10,52 @@
     <link rel="stylesheet" href="dist/reveal.css">
     <link rel="stylesheet" href="dist/theme/black.css">
     <link rel="stylesheet" href="plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/c/font_3597715_o6s683guirh.css">
+    <link rel="stylesheet" href="PageCss/index.css">
+    <script>
+        var link=document.createElement(`link`);
+        link.rel=`stylesheet`;
+        link.type=`text/css`;
+        link.href=window.location.search.match(/print-pdf/gi)?'dist/print/pdf.css' : 'dist/print/paper.css';
+        document.getElementsByTagName(`head`)[0].appendChild(link);
+    </script>
 </head>
 
 <body>
+    <div class="control">
+        <span class="iconfont icon-shezhi"></span>
+    </div>
+    <div class="menu">
+        <span class="iconfont icon-guanbi"></span>
+        <div class="detail">
+            <dlv class="tab active"><span class="iconfont icon-wenbenbianji"></span>内容编辑</dlv>
+            <div class="tab"><span class="iconfont icon-zhuti"></span>主题与特效</div>
+            <div class="tab"><span class="iconfont icon-xiazai"></span>下载PDF</div>
+            <div class="content">
+                <div class="header">编辑</div>
+                <div class="body editor">
+                    <textarea></textarea>
+                    <div>
+                        <button class="button-save">保存</button>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="header">主题</div>
+                <div class="body theme">
+                    <p>主题特效</p>
+                </div>
+            </div>
+            <div class="content">
+               <div class="header">下载</div>
+               <div class="body download">
+                  <p>下载PDF</p>
+               </div>
+            </div>
+        </div>
+    </div>
     <div class="reveal">
-        <div class="slides">
-            <section>欢迎</section>
-          
+        <div class="slides">  
         </div>
     </div>
     <script src="dist/reveal.js"></script>
