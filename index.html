@@ -8,17 +8,17 @@
     <title>Document</title>
     <link rel="stylesheet" href="dist/reset.css">
     <link rel="stylesheet" href="dist/reveal.css">
-    <link rel="stylesheet" href="dist/theme/black.css">
+     <!-- <link rel="stylesheet" href="dist/theme/solarized.css"> -->
     <link rel="stylesheet" href="plugin/highlight/monokai.css">
     <link rel="stylesheet" href="//at.alicdn.com/t/c/font_3597715_o6s683guirh.css">
     <link rel="stylesheet" href="PageCss/index.css">
-    <script>
+    <!-- <script>
         var link=document.createElement(`link`);
         link.rel=`stylesheet`;
         link.type=`text/css`;
         link.href=window.location.search.match(/print-pdf/gi)?'dist/print/pdf.css' : 'dist/print/paper.css';
         document.getElementsByTagName(`head`)[0].appendChild(link);
-    </script>
+    </script> -->
 </head>
 
 <body>
@@ -41,15 +41,76 @@
                 </div>
             </div>
             <div class="content">
-                <div class="header">主题</div>
+                <div class="header">主题特效</div>
                 <div class="body theme">
-                    <p>主题特效</p>
+                    <h5>主题</h5>
+                    <div class="themes">
+                        <figure data-theme="beige">
+                            <img src="./res/img/beige.png" alt="beige">
+                            <figcaption>beige</figcaption>
+                        </figure>
+                        <figure data-theme="black">
+                            <img src="./res/img/black.png" alt="black">
+                            <figcaption>black</figcaption>
+                        </figure>
+                        <figure data-theme="blood">
+                            <img src="./res/img/blood.png" alt="blood">
+                            <figcaption>blood</figcaption>
+                        </figure>
+                        <figure data-theme="league">
+                            <img src="./res/img/league.png" alt="league">
+                            <figcaption>league</figcaption>
+                        </figure>
+                        <figure data-theme="moon">
+                            <img src="./res/img/moon.png" alt="moon">
+                            <figcaption>moon</figcaption>
+                        </figure>
+                        <figure data-theme="night">
+                            <img src="./res/img/night.png" alt="night">
+                            <figcaption>night</figcaption>
+                        </figure>
+                        <figure data-theme="serif">
+                            <img src="./res/img/serif.png" alt="serif">
+                            <figcaption>serif</figcaption>
+                        </figure>
+                        <figure data-theme="simple">
+                            <img src="./res/img/simple.png" alt="simple">
+                            <figcaption>simple</figcaption>
+                        </figure>
+                        <figure data-theme="sky">
+                            <img src="./res/img/sky.png" alt="sky">
+                            <figcaption>sky</figcaption>
+                        </figure>
+                        <figure data-theme="solarized">
+                            <img src="./res/img/solarized.png" alt="solarized">
+                            <figcaption>solarized</figcaption>
+                        </figure>
+                        <figure data-theme="white">
+                            <img src="./res/img/white.png" alt="white">
+                            <figcaption>sky</figcaption>
+                        </figure>
+                    </div>
+                    <h5>转场</h5>
+                    <select class="transition">
+                        <option value="slide">滑动</option>
+                        <option value="fade">淡化</option>
+                        <option value="convex">凸出</option>
+                        <option value="concave">凹陷</option>
+                        <option value="zoom">缩放</option>
+                        <option value="none">无</option>
+                    </select>
+
+                    <h5>对齐</h5>
+                    <select class="align">
+                        <option value="center">居中</option>
+                        <option value="left-top">左上</option>
+                    </select>
                 </div>
             </div>
             <div class="content">
                <div class="header">下载</div>
                <div class="body download">
-                  <p>下载PDF</p>
+                  <button>下载PDF</button>
                </div>
             </div>
         </div>

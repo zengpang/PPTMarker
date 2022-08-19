@@ -98,11 +98,11 @@ const Menu = {
     //事件绑定
     bind() {
         //设置按钮点击事件
-        this.$settingIcon.onclick=()=>{
+        this.$settingIcon.onclick = () => {
             this.$menu.classList.add(`open`);
         }
         //关闭按钮点击事件
-        this.$closeIcon.onclick=()=>{
+        this.$closeIcon.onclick = () => {
             this.$menu.classList.remove(`open`);
         }
         //
@@ -128,17 +128,17 @@ const Editor = {
         this.bind();
         this.start();
     },
-    bind(){
+    bind() {
         //保存按钮点击事件
-        this.$saveBtn.onclick=()=>{
-            localStorage.markdown=this.$editInput.value;
+        this.$saveBtn.onclick = () => {
+            localStorage.markdown = this.$editInput.value;
             location.reload();
         }
     },
     //PPT初始化
     start() {
-        this.$editInput.value=this.markdown;
-        this.$slideContainer.innerHTML=convert(this.markdown);
+        this.$editInput.value = this.markdown;
+        this.$slideContainer.innerHTML = convert(this.markdown);
         Reveal.initialize({
             hash: true,
 
@@ -147,12 +147,88 @@ const Editor = {
         });
     }
 }
-const App = {
+//主题切换
+const Theme = {
     init() {
-      [...arguments].forEach(Modlue=>Modlue.init());
+        this.$$figures = $$(`.theme figure`);
+        this.$transition = $(`.theme .transition`);
+        this.$align = $(`.theme .align`);
+        this.$reveal = $(`.reveal`);
+        console.log(this.$transition);
+        this.bind();
+        this.loadTheme();
+    },
+    bind() {
+        //主题界面选择
+        this.$$figures.forEach($figure => $figure.onclick = () => {
+            this.$$figures.forEach($item => $item.classList.remove(`select`));
+            $figure.classList.add(`select`);
+            this.setTheme($figure.dataset.theme);
+        })
+        this.$transition.onchange = function () {
+            localStorage.transition = this.value;
+            location.reload();
+        }
+        this.$align.onchange = function () {
+            localStorage.align = this.value;
+            location.reload();
+        }
+    },
+    setTheme(theme) {
+        localStorage.theme = theme;
+        location.reload();
+    },
+    //读取主题
+    loadTheme() {
+        let theme=localStorage.theme||`beige`;
+        //创建link元素，引用主题CSS
+        let $link=document.createElement(`link`);
+        $link.rel=`stylesheet`;
+        $link.href=`dist/theme/${theme}.css`;
+        document.head.appendChild($link);
+        [...this.$$figures].find($figure=>$figure.dataset.theme===theme).classList.add(`select`);
+        this.$transition.value=localStorage.transition||`slide`;
+        this.$align.value=localStorage.align||`center`;
+        this.$reveal.classList.add(this.$align.value);
     }
 }
-App.init(Menu,Editor);
+//Pdf下载
+const Print={
+    init(){
+        this.$download=$(`.download`);
+        this.bind();
+        this.start();
+    },
+    bind(){
+        this.$download.addEventListener(`click`,()=>{
+            let $link=document.createElement(`a`);
+            $link.setAttribute(`target`,`_blank`);
+            $link.setAttribute(`href`,location.href.replace(/#\/.+/,`?print-pdf`));
+            $link.click();
+        })
+        window.onafterprint=()=>window.close();
+    },
+    start(){
+        let link=document.createElement(`link`);
+        link.rel=`stylesheet`;
+        link.type=`text/css`;
+        if(window.location.search.match(/print-pdf/gi))
+        {
+            link.href = 'dist/print/pdf.css';
+            window.print();
+        }else{
+            link.href='dist/print/paper.css';
+        }
+        document.head.appendChild(link);
+    }
+}
+//初始化
+const App = {
+    init() {
+        [...arguments].forEach(Modlue => Modlue.init());
+    }
+}
+App.init(Menu, Editor,Theme,Print);
 // function loadMarkdown(raw) {
 //     localStorage.markdown = raw;
 //     location.reload();
