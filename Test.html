@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="PageCss/Test.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class='wrap'>
+        <input type='checkbox' id='checking' style='display:none;' />
+        <button class='blob'>★</button>
+        <button class='blob'>✉</button>
+        <button class='blob'>⚙</button>
+        <button class='blob'>❤</button>
+        <button class='blob'>✌</button>
+        <button class='blob'>✎</button>
+        <button class='blob'>♫</button>
+        <button class='blob'>✆</button>
+        <label class='blob' for='checking'>
+            <span class='bar'></span>
+            <span class='bar'></span>
+            <span class='bar'></span>
+        </label>
+    </div>
+    <svg>
+        <defs>
+            <filter id="filt">
+                <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+                    result="filt" />
+                <feBlend in2="filt" in="SourceGraphic" result="mix" />
+            </filter>
+        </defs>
+    </svg>
+</body>
+
+</html>
