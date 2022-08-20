@@ -64,7 +64,7 @@ body{
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 10px;
-    
+    z-index: 15;
     transition: all .3s;
 }
 .sliderbar .content main p:hover{
@@ -74,7 +74,14 @@ body{
     font-size: 18px;
     margin-right: 18px;
 }
-.sliderbar .content main p:nth-child(n+1)
+.sliderbar .content main p:nth-child(1)
+{
+    position: absolute;
+    width: calc(100% - 10px) ;
+    z-index: -1;
+    background-color: #9c88ff;
+}
+.sliderbar .content main p:nth-child(n+2)
 {
     margin-top: 16px;
 }
