@@ -1,5 +1,7 @@
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
+const in$ = (f, s) => f.querySelector(s);
+const in$$ = (f, s) => f.querySelectorAll(s);
 const isMain = str => (/^#{1,2}(?!#)/).test(str);
 const isSub = str => (/^#{3}(?!#)/).test(str);
 
@@ -84,144 +86,148 @@ function convert(raw) {
     }
     return html;
 }
-// //菜单栏
-// const Menu = {
-//     init() {
-//         console.log(`菜单初始化`);
-//         this.$settingIcon = $(`.control .icon-shezhi`);
-//         this.$menu = $(`.menu`);
-//         this.$closeIcon = $(`.menu .icon-guanbi`);
-//         this.$$tabs = $$(`.menu .tab`);
-//         this.$$contents = $$(`.menu .content`);
-//         this.bind();
-//     },
-//     //事件绑定
-//     bind() {
-//         //设置按钮点击事件
-//         this.$settingIcon.onclick = () => {
-//             this.$menu.classList.add(`open`);
-//         }
-//         //关闭按钮点击事件
-//         this.$closeIcon.onclick = () => {
-//             this.$menu.classList.remove(`open`);
-//         }
-//         //
-//         this.$$tabs.forEach($tab => $tab.onclick = () => {
-//             this.$$tabs.forEach($node => $node.classList.remove(`active`));
-//             $tab.classList.add(`active`);
-//             let index = [...this.$$tabs].indexOf($tab);
-//             this.$$contents.forEach($node => $node.classList.remove(`active`));
-//             this.$$contents[index].classList.add(`active`);
-//         })
+function loadMarkdown(raw) {
+    localStorage.markdown = raw;
+    location.reload();
+}
+//侧边菜单栏
+const Sliderbar = {
+    init() {
+        console.log(`菜单初始化`);
+        this.$sliderbar = $(`.sliderbar`);
+        this.$sliderbarOpenBtn = $(`.sliderbar .content header .icon-arrows`);
+        this.$sliderHeader = $(`.sliderbar .content header`);
+        this.$sliderbarLogoName = $(`.sliderbar .content header p:nth-child(2)`);
+        this.$sliderbarMain = $(`.sliderbar .content main`);
+        this.$$sliderbarItem = $$(`.sliderbar .content main p:nth-child(n+2)`);
+        this.$sliderbarItemBottom=$(`.sliderbar .content main p:nth-child(1)`);
+        this.sliderbarItemTexts = new Array(this.$$sliderbarItem.length).fill(``);
+        this.$sliderbarFooter = $(`.sliderbar .content footer`);
+        this.$sliderbarInfo = $(`.sliderbar .content footer p `);
+        this.sliderbarInfoText = this.$sliderbarInfo.innerHTML;
+        this.isShrink = true;
+        this.isShowBottom=false;
+        this.bind();
 
-//     }
-// }
-// //编辑器
-// const Editor = {
-//     init() {
-//         console.log(`编译器初始化`);
-//         this.$editInput = $(`.editor textarea`);
-//         this.$saveBtn = $(`.editor .button-save`);
-//         this.$slideContainer = $(`.slides`);
-//         let TPL = `## 欢迎使用PPTMarker`;//初始PPT语句
-//         this.markdown = localStorage.markdown || TPL;//检测是否存在localStorage.markdown，如果有则传入localStorage.markdown内容，否则传入初始语句
-//         this.bind();
-//         this.start();
-//     },
-//     bind() {
-//         //保存按钮点击事件
-//         this.$saveBtn.onclick = () => {
-//             localStorage.markdown = this.$editInput.value;
-//             location.reload();
-//         }
-//     },
-//     //PPT初始化
-//     start() {
-//         this.$editInput.value = this.markdown;
-//         this.$slideContainer.innerHTML = convert(this.markdown);
-//         Reveal.initialize({
-//             hash: true,
+    },
+    //事件绑定
+    bind() {
+        self = this;
+        // let arraySliderbarItem = [...this.$$sliderbarItem];
+        // for (let indexNum = 0; indexNum < this.sliderbarItemTexts.length; indexNum++) {
+        //     let str = arraySliderbarItem[indexNum].innerHTML;
+        //     this.sliderbarItemTexts[indexNum] = str;
+        // };
+        this.$$sliderbarItem.forEach(index=>{
+            index.onclick=()=>{
+                if(!this.isShowBottom)
+                {
+                  return;
+                }
+                console.log(`Item触发`);
+                this.$sliderbarItemBottom.style.transform = `translateY(${index.offsetTop - index.offsetHeight  * 2.3}px)`;
+            }}
+            );
+          
+          this.$sliderbarMain.onclick=()=>{
+            if(!this.isShowBottom)
+            {
+                this.$sliderbarItemBottom.classList.add(`showBottom`);
+            }
+            else
+            {
+                return;
+            }
+            this.isShowBottom=true  
+        };
+        //设置侧边栏点击事件
+        this.$sliderbarOpenBtn.onclick = () => {
+            if (this.isShrink) {
+               
+                this.$sliderbar.classList.remove(`shrink`);
+                $$(`.sliderbar .content main p:nth-child(n+2) span:nth-child(2)`).forEach(index => {
+                    this.animSet(index, `sliderbarShow`);
+                    this.animPlay(index, `播放`);
+                })
 
-//             // Learn about plugins: https://revealjs.com/plugins/
-//             plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
-//         });
-//     }
-// }
-// //主题切换
-// const Theme = {
-//     init() {
-//         this.$$figures = $$(`.theme figure`);
-//         this.$transition = $(`.theme .transition`);
-//         this.$align = $(`.theme .align`);
-//         this.$reveal = $(`.reveal`);
-//         console.log(this.$transition);
-//         this.bind();
-//         this.loadTheme();
-//     },
-//     bind() {
-//         //主题界面选择
-//         this.$$figures.forEach($figure => $figure.onclick = () => {
-//             this.$$figures.forEach($item => $item.classList.remove(`select`));
-//             $figure.classList.add(`select`);
-//             this.setTheme($figure.dataset.theme);
-//         })
-//         this.$transition.onchange = function () {
-//             localStorage.transition = this.value;
-//             location.reload();
-//         }
-//         this.$align.onchange = function () {
-//             localStorage.align = this.value;
-//             location.reload();
-//         }
-//     },
-//     setTheme(theme) {
-//         localStorage.theme = theme;
-//         location.reload();
-//     },
-//     //读取主题
-//     loadTheme() {
-//         let theme=localStorage.theme||`beige`;
-//         //创建link元素，引用主题CSS
-//         let $link=document.createElement(`link`);
-//         $link.rel=`stylesheet`;
-//         $link.href=`dist/theme/${theme}.css`;
-//         document.head.appendChild($link);
-//         [...this.$$figures].find($figure=>$figure.dataset.theme===theme).classList.add(`select`);
-//         this.$transition.value=localStorage.transition||`slide`;
-//         this.$align.value=localStorage.align||`center`;
-//         this.$reveal.classList.add(this.$align.value);
-//     }
-// }
-// //Pdf下载
-// const Print={
-//     init(){
-//         this.$download=$(`.download`);
-//         this.bind();
-//         this.start();
-//     },
-//     bind(){
-//         this.$download.addEventListener(`click`,()=>{
-//             let $link=document.createElement(`a`);
-//             $link.setAttribute(`target`,`_blank`);
-//             $link.setAttribute(`href`,location.href.replace(/#\/.+/,`?print-pdf`));
-//             $link.click();
-//         })
-//         window.onafterprint=()=>window.close();
-//     },
-//     start(){
-//         let link=document.createElement(`link`);
-//         link.rel=`stylesheet`;
-//         link.type=`text/css`;
-//         if(window.location.search.match(/print-pdf/gi))
-//         {
-//             link.href = 'dist/print/pdf.css';
-//             window.print();
-//         }else{
-//             link.href='dist/print/paper.css';
-//         }
-//         document.head.appendChild(link);
-//     }
-//}
+                this.animSet($(`.sliderbar .content footer p span:nth-child(2)`), `sliderbarShow`);
+                this.animPlay($(`.sliderbar .content footer p span:nth-child(2)`), `播放`);
+
+                // for(let indexNum=0;indexNum<this.sliderbarItemTexts.length;indexNum++)
+                // {
+                //     arraySliderbarItem[indexNum].innerHTML=this.sliderbarItemTexts[indexNum];
+                // }
+                // this.$sliderbarInfo.innerHTML=this.sliderbarInfoText;
+                in$$(this.$sliderbar, `.sliderbar .content .shrink`).forEach(index => {
+
+                    index.classList.remove(`shrink`);
+                })
+               
+                console.log(`开始`);
+            }
+            else {
+                
+                $$(`.sliderbar .content main p:nth-child(n+2) span:nth-child(2)`).forEach(index => {
+                    this.animSet(index, `sliderbarHide`);
+                    this.animPlay(index, `播放`);
+                })
+                this.animSet($(`.sliderbar .content footer p span:nth-child(2)`), `sliderbarHide`);
+                this.animPlay($(`.sliderbar .content footer p span:nth-child(2)`), `播放`);
+                this.$sliderbar.classList.add(`shrink`);
+                this.$$sliderbarItem.forEach(index => {
+                    // let str=index.innerHTML;
+                    // index.innerHTML= str.replace(index.innerText,"");
+                    index.classList.add(`shrink`);
+                });
+                //let infoStr=this.$sliderbarInfo.innerHTML;
+                //this.$sliderbarInfo.innerHTML=infoStr.replace(this.$sliderbarInfo.innerText,"");
+                this.$sliderbarLogoName.classList.add(`shrink`);
+                this.$sliderbarInfo.classList.add(`shrink`);
+            }
+            this.isShrink = !self.isShrink;
+        };
+        this.$sliderbar.addEventListener("transitionend", (event) => {
+            // let isPlayed=event.path.find(index=>index.classList&&index.classList.contains(`sliderbar`));
+            let isPlayed = (event.target.className == `sliderbar shadow`);
+            //div.sliderbar.shadow
+            // console.log(event);
+            if (!this.isShrink && isPlayed) {
+                console.log("触发");
+                // for(let indexNum=0;indexNum<this.sliderbarItemTexts.length;indexNum++)
+                // {
+                //     arraySliderbarItem[indexNum].innerHTML=this.sliderbarItemTexts[indexNum];
+                // }
+                // this.$sliderbarInfo.innerHTML=this.sliderbarInfoText;
+            }
+        })
+        //关闭按钮点击事件
+
+        //
+
+
+    },
+    // sizeShrink(){
+    //     in$(this.$sliderHeader,`.sliderbar .content header p:nth-child(2)`).width=0;
+    //     in$$(this.$sliderbarMain,`p:nth-child(n+1)`);
+    // },
+    // sizeRestore(){
+
+    // }
+    animSet($node, animName) {
+        $node.style[`animation-name`] = animName;
+    },
+    animPlay($node, animStatue) {
+        switch (animStatue) {
+            case `播放`: {
+                $node.style[`animation-play-state`] = `running`;
+            }; break;
+            default: {
+                $node.style[`animation-play-state`] = `paused`;
+            };
+        }
+    }
+}
+
 //初始化
 const App = {
     init() {
@@ -229,12 +235,10 @@ const App = {
     }
 }
 //App.init(Menu, Editor,Theme,Print);
-function loadMarkdown(raw) {
-    localStorage.markdown = raw;
-    location.reload();
-}
-function start(){
-    let TPL = `## 欢迎使用PPTMarker`;//初始PPT语句
+
+function start() {
+    let TPL = `## 欢迎使用PPTMarker
+               ## 页面1`;//初始PPT语句
     let markdown = localStorage.markdown || TPL;//检测是否存在localStorage.markdown，如果有则传入localStorage.markdown内容，否则传入初始语句
     let $slideContainer = $(`.slides`);
     $slideContainer.innerHTML = convert(markdown);
@@ -246,3 +250,4 @@ function start(){
     });
 }
 start();//每次页面刷新调用
+App.init(Sliderbar);

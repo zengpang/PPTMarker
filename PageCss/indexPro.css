@@ -1,9 +1,10 @@
 /* 颜色搭配方案 底色#353b48 字体未选中#dcdde1 字体选中#f5f6fa 底框颜色#487eb0 参考配色方案地址https://flatuicolors.com/palette/gb  */
-body{
+body {
     margin: 0;
 }
+
 /*侧边菜单栏*/
-.sliderbar{
+.sliderbar {
     width: 250px;
     position: absolute;
     background-color: #353b48;
@@ -13,30 +14,43 @@ body{
     border-radius: 20px;
     height: calc(100vh - 200px);
     transition: all .3s;
-    box-shadow:
-  2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
-  6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
-  12.5px 12.5px 10px rgba(0, 0, 0, 0.035),
-  22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),
-  41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),
-  100px 100px 80px rgba(0, 0, 0, 0.07)
+
 }
-.sliderbar .content{
+
+.sliderbar.shrink {
+    width: 88px;
+}
+
+.shadow {
+    box-shadow:
+        2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
+        6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
+        12.5px 12.5px 10px rgba(0, 0, 0, 0.035),
+        22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),
+        41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),
+        100px 100px 80px rgba(0, 0, 0, 0.07)
+}
+
+.sliderbar .content {
     position: relative;
-    height:calc(100% - 72px);
+    height: calc(100% - 72px);
     width: calc(100% - 40px);
     margin-top: 40px;
     margin-bottom: 32px;
     margin-left: 16px;
     color: #dcdde1;
+
 }
-.sliderbar .content header{
+
+.sliderbar .content header {
     height: 40px;
     display: grid;
+    margin-left: 4px;
     grid-template-columns: auto auto;
     align-items: center;
 }
-.sliderbar .content header .logIcon{
+
+.sliderbar .content header .logIcon {
     width: 40px;
     height: 40px;
     background-color: #487eb0;
@@ -45,16 +59,39 @@ body{
     align-items: center;
     justify-content: center;
 }
-.sliderbar .content header p{
-    color:#f5f6fa;
+
+.sliderbar .content header p:nth-child(1),
+.sliderbar .content header p:nth-child(2) {
+    color: #f5f6fa;
     font-size: 18px;
     margin: 0;
+    opacity: 1;
 }
-.sliderbar .content main{
+
+.sliderbar .content header p:nth-child(2).shrink {
+    font-size: 0px;
+}
+
+.sliderbar .content header .iconfont.icon-arrows {
+    width: 30px;
+    height: 30px;
+    background-color: #9c88ff;
+    color: #f5f6fa;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: -37px;
+    border-radius: 50%;
+
+}
+
+.sliderbar .content main {
     height: 304px;
     margin-top: 60px;
 }
-.sliderbar .content main p{
+
+.sliderbar .content main p {
     height: 24px;
     display: flex;
     font-size: 18px;
@@ -65,33 +102,75 @@ body{
     padding-bottom: 10px;
     padding-left: 10px;
     z-index: 15;
-    transition: all .3s;
+
 }
-.sliderbar .content main p:hover{
+
+.sliderbar .content main p:hover {
     background-color: rgba(255, 255, 255, 0.1);
+    color: #f5f6fa;
 }
-.sliderbar .content main p span{
+
+.sliderbar .content main p span {
     font-size: 18px;
     margin-right: 18px;
+
 }
-.sliderbar .content main p:nth-child(1)
-{
+
+.sliderbar .content main p:nth-child(1) {
     position: absolute;
-    width: calc(100% - 10px) ;
+    width: calc(100% - 10px);
     z-index: -1;
     background-color: #9c88ff;
+    opacity: 0;
+    transition: all .3s;
 }
-.sliderbar .content main p:nth-child(n+2)
-{
+
+.sliderbar .content main p:nth-child(1).showBottom {
+    opacity: 1;
+   
+}
+
+.sliderbar .content main p.shrink span:nth-child(1) {
+    margin-left: 5px;
+
+}
+
+.sliderbar .content main p.shrink span:nth-child(2) {
+    opacity: 0;
+}
+
+.sliderbar .content main p:nth-child(n+2) {
     margin-top: 16px;
+
 }
-.sliderbar .content footer{
+
+.sliderbar .content main p:nth-child(n+2) span:nth-child(2) {
+    animation-duration: .3s;
+    animation-fill-mode: both;
+    animation-play-state: paused;
+}
+
+.sliderbar .content .shrink {
+    font-size: 0px;
+
+    justify-content: left;
+    padding-right: 10px;
+}
+
+
+.sliderbar .content .shrink span {
+    margin-right: 0px;
+
+}
+
+.sliderbar .content footer {
     height: 24px;
     position: absolute;
     bottom: 0;
     width: 100%;
 }
-.sliderbar .content footer p{
+
+.sliderbar .content footer p {
     height: 24px;
     display: flex;
     font-size: 18px;
@@ -101,14 +180,53 @@ body{
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 10px;
-  
+    opacity: 1;
+
 }
-.sliderbar .content footer p span{
+
+.sliderbar .content footer p span {
     font-size: 18px;
     margin-right: 18px;
 }
 
+.sliderbar .content footer p span:nth-child(2) {
+    animation-duration: .3s;
+    animation-fill-mode: both;
+    animation-play-state: paused;
+}
 
+.sliderbar .content footer p.shrink span:nth-child(1) {
+    margin-left: 5px;
+}
 
+.sliderbar .content footer p.shrink span:nth-child(2) {
+    opacity: 0;
+}
 
+@keyframes sliderbarShow {
+    0% {
+        opacity: 0;
+    }
 
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes sliderbarHide {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
