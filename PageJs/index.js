@@ -154,11 +154,12 @@ const Theme = {
         this.$transition = $(`.theme .transition`);
         this.$align = $(`.theme .align`);
         this.$reveal = $(`.reveal`);
-        console.log(this.$transition);
+        console.log(this.$transition );
         this.bind();
         this.loadTheme();
     },
     bind() {
+        self=this;
         //主题界面选择
         this.$$figures.forEach($figure => $figure.onclick = () => {
             this.$$figures.forEach($item => $item.classList.remove(`select`));
@@ -167,6 +168,7 @@ const Theme = {
         })
         this.$transition.onchange = function () {
             localStorage.transition = this.value;
+            console.log(this.value);
             location.reload();
         }
         this.$align.onchange = function () {
@@ -203,7 +205,8 @@ const Print={
         this.$download.addEventListener(`click`,()=>{
             let $link=document.createElement(`a`);
             $link.setAttribute(`target`,`_blank`);
-            $link.setAttribute(`href`,location.href.replace(/#\/.+/,`?print-pdf`));
+           // $link.setAttribute(`href`,location.href.replace(/#\/.+/,`?print-pdf`));
+           $link.setAttribute(`href`, location.href+= `?print-pdf`);
             $link.click();
         })
         window.onafterprint=()=>window.close();

@@ -11,12 +11,144 @@
     <link rel="stylesheet" href="dist/theme/blood.css">
     <link rel="stylesheet" href="plugin/highlight/monokai.css">
     <link rel="stylesheet" href="PageCss/indexPro.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/c/font_3601515_fxszd81sbf.css">
-   
+    <link rel="stylesheet" href="//at.alicdn.com/t/c/font_3601515_cn1mx6qhsa.css">
+    
 </head>
 
 <body>
-    <div class="sliderbar shadow shrink">
+    <div class="sliderbarContent theme">
+      <div class="header">主题页面</div>
+      <div class="body theme">
+          <h5>主题选择</h5>
+          <div class="themes">
+              <figure data-theme="beige">
+                  <img src="./res/img/beige.png" alt="beige">
+                  <figcaption>beige</figcaption>
+              </figure>
+              <figure data-theme="black">
+                  <img src="./res/img/black.png" alt="black">
+                  <figcaption>black</figcaption>
+              </figure>
+              <figure data-theme="blood">
+                  <img src="./res/img/blood.png" alt="blood">
+                  <figcaption>blood</figcaption>
+              </figure>
+              <figure data-theme="league">
+                  <img src="./res/img/league.png" alt="league">
+                  <figcaption>league</figcaption>
+              </figure>
+              <figure data-theme="moon">
+                  <img src="./res/img/moon.png" alt="moon">
+                  <figcaption>moon</figcaption>
+              </figure>
+              <figure data-theme="night">
+                  <img src="./res/img/night.png" alt="night">
+                  <figcaption>night</figcaption>
+              </figure>
+              <figure data-theme="serif">
+                  <img src="./res/img/serif.png" alt="serif">
+                  <figcaption>serif</figcaption>
+              </figure>
+              <figure data-theme="simple">
+                  <img src="./res/img/simple.png" alt="simple">
+                  <figcaption>simple</figcaption>
+              </figure>
+              <figure data-theme="sky">
+                  <img src="./res/img/sky.png" alt="sky">
+                  <figcaption>sky</figcaption>
+              </figure>
+              <figure data-theme="solarized">
+                  <img src="./res/img/solarized.png" alt="solarized">
+                  <figcaption>solarized</figcaption>
+              </figure>
+              <figure data-theme="white">
+                  <img src="./res/img/white.png" alt="white">
+                  <figcaption>sky</figcaption>
+              </figure>
+          </div>
+          <h5>转场</h5>
+          <select class="transition">
+              <option value="slide">滑动</option>
+              <option value="fade">淡化</option>
+              <option value="convex">凸出</option>
+              <option value="concave">凹陷</option>
+              <option value="zoom">缩放</option>
+              <option value="none">无</option>
+          </select>
+
+          <h5>对齐</h5>
+          <select class="align">
+              <option value="center">居中</option>
+              <option value="left-top">左上</option>
+          </select>
+      </div>
+    </div>
+    <div class="sliderbarContent redact">
+        <h1 class="header">编辑页面</h1>
+        <div class="body editor">
+            <textarea></textarea>
+            <div>
+                <button class="button-save">保存</button>
+            </div>
+        </div>
+    </div>
+    <div class="sliderbarContent node">
+      <h1 class="header">节点页面</h1>
+      <div class="body nodes">
+         <div class="nodeDrawing" id="Drawing">
+            <div class="node show" id="node1">
+                <header><p contenteditable="true">节点头</p></header>
+                <main>
+                 <div class="item">
+                    <select class="nodeContent">
+                        <option value="bolid">加粗</option>
+                        <option value="italic">斜体</option>
+                        <option value="italicbolid">斜体加粗</option>
+                        <option value="deleteline">删除线</option>
+                    </select>
+                    <input type="text"></input>
+                 </div>
+            
+                </main>
+                <footer>
+                    <button>新增节点内容</button>
+                </footer>
+            </div>
+            <div class="node show sonNode" id="node2">
+                <header><p contenteditable="true">节点头</p></header>
+                <main>
+                 <div class="item">
+                    <select class="nodeContent">
+                        <option value="bolid">加粗</option>
+                        <option value="italic">斜体</option>
+                        <option value="italicbolid">斜体加粗</option>
+                        <option value="deleteline">删除线</option>
+                    </select>
+                    <input type="text"></input>
+                 </div>
+            
+                </main>
+                <footer>
+                    <button>新增节点内容</button>
+                </footer>
+            </div>
+         </div>
+         <div class="buttons">
+            <button class="button save">保存</button>
+            <button class="button addFPpoint">新增父页面节点</button>
+            <button class="button addSPpoint">新增子页面节点</button> 
+        </div> 
+      </div>
+
+  </div>
+    <div class="sliderbarContent download">
+      <div class="header">下载</div>
+      <div class="body download">
+         <button>下载PDF</button>
+      </div>
+    </div>
+    <div class="sliderbarTouch">
+    <div class="sliderbar shadow shrink hide">
        <div class="content">
           <header>  
                  <div class="logIcon">
@@ -27,25 +159,29 @@
           </header>
           <main>
             <p></p>
-            <p class="shrink"><span class="iconfont icon-theme"></span><span>主题特效</span></p>
-            <p class="shrink"><span class="iconfont icon-redact"></span><span>编辑</span></p>
-            <p class="shrink"><span class="iconfont icon-download"></span><span>下载</span></p>
+            <p class="shrink" data-itemName="theme"><span class="iconfont icon-theme"></span><span>主题特效</span></p>
+            <p class="shrink" data-itemName="redact"><span class="iconfont icon-redact"></span><span>编辑</span></p>
+            <p class="shrink" data-itemName="node"><span class="iconfont icon-node"></span><span>节点</span></p>
+            <p class="shrink" data-itemName="download"><span class="iconfont icon-download"></span><span>下载</span></p>
           </main>
           <footer>
+            <p class="shrink"><span class="iconfont icon-exit"></span><span>退出</span></p>
             <p class="shrink"><span class="iconfont icon-info"></span><span>相关信息</span></p>
           </footer>
        </div>
     </div>
+   </div>
     <div class="reveal">
         <div class="slides">  
           
         </div>
     </div>
     <script src="dist/reveal.js"></script>
+    <script src="dist/node/Jsplumb.js"></script>
     <script src="plugin/notes/notes.js"></script>
     <script src="plugin/markdown/markdown.js"></script>
     <script src="plugin/highlight/highlight.js"></script>
-     <script src="PageJs/indexPro.js"></script> 
+    <script src="PageJs/indexPro.js"></script> 
 </body>
 
 </html>

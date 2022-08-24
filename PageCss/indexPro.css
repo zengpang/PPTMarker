@@ -1,24 +1,39 @@
-/* 颜色搭配方案 底色#353b48 字体未选中#dcdde1 字体选中#f5f6fa 底框颜色#487eb0 参考配色方案地址https://flatuicolors.com/palette/gb  */
+/* 颜色搭配方案 底色#353b48 #1e272e 字体未选中#dcdde1 字体选中#f5f6fa 底框颜色#487eb0 节点颜色#487eb0  参考配色方案地址https://flatuicolors.com/palette/gb  */
 body {
     margin: 0;
 }
 
 /*侧边菜单栏*/
+.sliderbarTouch {
+    width: 350px;
+    position: absolute;
+    z-index: 13;
+    height: 100vh;
+    left: 0;
+
+}
+
 .sliderbar {
     width: 250px;
     position: absolute;
     background-color: #353b48;
-    z-index: 12;
+    z-index: 14;
     margin-top: 100px;
     margin-left: 30px;
     border-radius: 20px;
     height: calc(100vh - 200px);
     transition: all .3s;
-
+    left: 0;
 }
 
 .sliderbar.shrink {
     width: 88px;
+    transition: all .3s;
+}
+
+.sliderbar.shrink.hide {
+
+    transform: translateX(calc(-100% - 88px));
 }
 
 .shadow {
@@ -66,10 +81,18 @@ body {
     font-size: 18px;
     margin: 0;
     opacity: 1;
+
+}
+
+.sliderbar .content header p:nth-child(2) {
+    animation-duration: .3s;
+    animation-fill-mode: both;
+    animation-play-state: paused;
 }
 
 .sliderbar .content header p:nth-child(2).shrink {
     font-size: 0px;
+
 }
 
 .sliderbar .content header .iconfont.icon-arrows {
@@ -84,6 +107,10 @@ body {
     right: -37px;
     border-radius: 50%;
 
+}
+
+.sliderbar .content header .iconfont.icon-arrows.unfold {
+    transform: rotate(180deg);
 }
 
 .sliderbar .content main {
@@ -102,11 +129,15 @@ body {
     padding-bottom: 10px;
     padding-left: 10px;
     z-index: 15;
-
+    transition: all .3s;
 }
 
 .sliderbar .content main p:hover {
     background-color: rgba(255, 255, 255, 0.1);
+    color: #f5f6fa;
+}
+
+.sliderbar .content main p.seleced {
     color: #f5f6fa;
 }
 
@@ -122,12 +153,12 @@ body {
     z-index: -1;
     background-color: #9c88ff;
     opacity: 0;
-    transition: all .3s;
+    transition: opacity .3s;
 }
 
 .sliderbar .content main p:nth-child(1).showBottom {
     opacity: 1;
-   
+
 }
 
 .sliderbar .content main p.shrink span:nth-child(1) {
@@ -164,7 +195,7 @@ body {
 }
 
 .sliderbar .content footer {
-    height: 24px;
+    height: 120px;
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -181,7 +212,25 @@ body {
     padding-bottom: 10px;
     padding-left: 10px;
     opacity: 1;
+    transition: all .3s;
+}
 
+.sliderbar .content footer p:nth-child(1) {
+    margin-bottom: 32px;
+}
+
+.sliderbar .content footer p:nth-child(1) {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.sliderbar .content footer p:nth-child(1).showExit {
+    visibility: visible;
+    opacity: 1;
+}
+
+.sliderbar .content footer p:hover {
+    color: #f5f6fa;
 }
 
 .sliderbar .content footer p span {
@@ -203,6 +252,323 @@ body {
     opacity: 0;
 }
 
+/*侧边菜单栏对应的内容*/
+.sliderbarContent {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    background-color: #1e272e;
+    opacity: 0;
+    z-index: 12;
+    transition: all .3s;
+    font-size: 25px;
+    color: #f5f6fa;
+    visibility: hidden;
+}
+
+.sliderbarContent .header {
+    font-size: 40px;
+    padding: 20px;
+    border-bottom: 1px solid #353b48;
+
+}
+
+.sliderbarContent.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sliderbarContent.hide {
+    transform: translateY(-100%);
+}
+
+.sliderbarContent.download .body.download {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    height: 600px;
+}
+
+.sliderbarContent.download .body.download button {
+    width: 300px;
+    height: 80px;
+    background-color: #9c88ff;
+    color: #f5f6fa;
+    border-radius: 12px;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.sliderbarContent .theme h5 {
+    margin-top: 30px;
+}
+
+.sliderbarContent.theme {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.sliderbarContent .body.theme {
+    display: flex;
+    flex-direction: column;
+    width: 65%;
+    align-self: center;
+    
+    
+}
+
+.sliderbarContent .body.theme h5:nth-child(1),
+.sliderbarContent .body.theme h5:nth-child(2) {
+
+    align-self: center;
+}
+
+.sliderbarContent .themes {
+    display: flex;
+
+    flex-wrap: wrap;
+
+}
+
+.sliderbarContent .themes figure {
+    margin-top: 30px;
+    text-align: center;
+    opacity: 0.7;
+    border: 4px solid transparent;
+    transition: .3s;
+    cursor: pointer;
+
+}
+
+.sliderbarContent .themes figure.select {
+    opacity: 1;
+    border: 4px solid #fff;
+
+}
+
+.sliderbarContent .themes figure img {
+    width: 200px;
+    height: 150px;
+    cursor: pointer;
+}
+
+.sliderbarContent,
+.themes figcaption {
+    padding: 10px;
+
+}
+
+.sliderbarContent .theme .transition,
+.sliderbarContent .theme .align {
+    margin-top: 20px;
+    align-self: flex-start;
+    
+
+}
+.sliderbarContent.redact
+{
+    display: flex;
+    flex-direction: column;
+    
+}
+.sliderbarContent.redact .editor
+{
+    display: flex;
+    width: 70%;
+    flex-direction: column;
+    align-self: center;
+}
+.sliderbarContent.redact textarea{
+   
+    height: 600px;
+    padding: 10px;
+    background: #1E1E1E;
+    color: #aaa;
+    border: none;
+    outline: none;
+}
+.sliderbarContent.redact .button-save
+{
+    width: 100px;
+    height: 30px;
+    border: none;
+    color: #f5f6fa;
+    background-color: #353b48;
+}
+.sliderbarContent.node 
+{
+    display: flex;
+    flex-direction: column;
+}
+.sliderbarContent.node .body.nodes
+{
+    display: flex;
+    width: 70%;
+    flex-direction: column;
+    align-self: center;
+    
+}
+.sliderbarContent.node .nodeDrawing
+{
+    height: 600px;
+    padding: 10px;
+    position: relative;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background: #202020;
+    color: #aaa;
+}
+.sliderbarContent.node .nodeDrawing .node
+{ 
+    display: grid;
+    grid-template-rows: auto auto auto;
+    width: 150px;
+    height: 180px;
+    border-radius: 10px;
+    position: absolute;
+    border:2px solid #393939;
+    background-color: #1D1D1D;
+    display: none;
+    margin-bottom: 80px;
+    cursor: pointer;
+}
+
+.sliderbarContent.node .nodeDrawing .node.show
+{
+    display: grid;
+}
+.sliderbarContent.node .nodeDrawing .node header{
+    font-size: 18px;
+    color: #C1C1C1;
+    display: flex;  
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    background-color: #393939;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  
+}
+.sliderbarContent.node .nodeDrawing .node.sonNode
+{
+    display: grid;
+    grid-template-rows: 40px auto auto;
+    width: 140px;
+    height: 160px;
+    border-radius: 10px;
+    position: absolute;
+    border:2px solid #393939;
+    background-color: #1D1D1D;
+    display: none;
+    margin-bottom: 80px;
+    cursor: pointer;
+}
+.sliderbarContent.node .nodeDrawing .node.show.sonNode
+{
+    display: grid;
+}
+.sliderbarContent.node .nodeDrawing .node.sonNode header
+{
+    font-size: 16px;
+    color: #C1C1C1;
+    display: flex;  
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    padding-top: 10px;
+    background-color: transparent;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.sliderbarContent.node .nodeDrawing .node.sonNode main
+{
+    display: flex;
+    font-size: 16px;
+    flex-direction: column;
+    align-items: center;
+}
+.sliderbarContent.node .nodeDrawing .node header p{
+    height: auto;
+}
+.sliderbarContent.node .nodeDrawing .node main
+{
+    display: flex;
+    font-size: 20px;
+    flex-direction: column;
+    align-items: center;
+}
+.sliderbarContent.node .nodeDrawing .node main .item:nth-child(n+1)
+{
+    margin-top: 10px;
+}
+.sliderbarContent.node .nodeDrawing .node main .item
+{
+    display: grid;
+    grid-template-columns: auto auto;
+}
+.sliderbarContent.node .nodeDrawing .node main .item .nodeContent
+{
+    width: 55px;
+    height: 30px;
+    margin-right: 5px;
+    color: #C1C1C1;
+    border:2px solid #393939;
+    background-color: transparent;
+}
+.sliderbarContent.node .nodeDrawing .node main .item input
+{
+    width: 60px;
+    height: 24px;
+    color: #C1C1C1;
+    background-color: transparent;
+    outline: none;
+    border:2px solid #393939;
+}
+.sliderbarContent.node .nodeDrawing .node footer
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.sliderbarContent.node .nodeDrawing .node footer button
+{
+    width: 100px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    color: #f5f6fa;
+    background-color: #353b48;
+}
+
+/* .sliderbarContent.node .nodeDrawing .node textarea
+{
+    width: 100%;
+    height: 80%;
+    background-color: #9c88ff;
+    color: #aaa;
+    margin-bottom: 10px;
+    border: none;
+    outline: none;
+} */
+.sliderbarContent.node .buttons button{
+    width: 120px;
+    height: 30px;
+    border: none;
+    color: #f5f6fa;
+    background-color: #353b48;
+}
+/**/
+#diagramContainer {
+    padding: 20px;
+    width: 80%;
+    height: 200px;
+    border: 1px solid rgb(19, 185, 66);
+  }
+/*UI动画*/
 @keyframes sliderbarShow {
     0% {
         opacity: 0;
