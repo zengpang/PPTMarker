@@ -3,7 +3,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const create$ = (type, classNames, id) => {
     let element = document.createElement(type);
-    
+
     if (id != `` && id != null) {
         element.setAttribute(`id`, id);
     }
@@ -20,30 +20,30 @@ const create$ = (type, classNames, id) => {
     }
     return element;
 };
-const set$=(element,attributeName,attributeValue,text)=>{
-   if(element==null)
-   { 
-      return;
-   }
-   switch(true)
-   {
-      case(attributeName!=null&&attributeName!=``
-      &&attributeValue!=null&&attributeValue!=``):{
-        element.setAttribute(attributeName,attributeValue);
-      };
-      case(text!=null&&text!=``):
-      {
-        element.innerHTML=text;
-      };break;
-   }
+const set$ = (element, attributeName, attributeValue, text) => {
+    if (element == null) {
+        return;
+    }
+    switch (true) {
+        case (attributeName != null && attributeName != ``
+            && attributeValue != null && attributeValue != ``): {
+                element.setAttribute(attributeName, attributeValue);
+            };
+        case (text != null && text != ``):
+            {
+                element.innerHTML = text;
+            }; break;
+    }
 }
 const in$ = (f, s) => f.querySelector(s);
 const in$$ = (f, s) => f.querySelectorAll(s);
 const isMain = str => (/^#{1,2}(?!#)/).test(str);
 const isSub = str => (/^#{3}(?!#)/).test(str);
 
-function convert(raw) {
+function convert(raw) 
+{
     let arr = raw.split(/\n(?=\s*#)/).filter(s => s != "").map(s => s.trim());//根据#号分割用户输入内容
+   
     let html = ``;
     //遍历用户输入
     for (let i = 0; i < arr.length; i++) {
@@ -122,6 +122,42 @@ function convert(raw) {
         }
     }
     return html;
+}
+class NodeInfo{
+    constructor()
+    {
+
+    }
+    setNodeName(nodeName)
+    {
+        this.nodeName=nodeName;
+    }
+    getNodeName()
+    {
+        return this.nodeName;
+    }
+    setNodeId(nodeId)
+    {
+        this.nodeId=nodeId;
+    }
+    getNodeId()
+    {
+        return this.nodeId;
+    }
+    setNodeType(nodeType)
+    {
+      this.nodeType=nodeType;
+    }
+    getNodeType()
+    {
+        return this.nodeType;
+    }
+}
+function convertToNode(raw)
+{
+    let arr = raw.split(/\n(?=\s*#)/).filter(s => s != "").map(s => s.trim());
+    let nodes=new Array().fill(new NodeInfo());
+    
 }
 function loadMarkdown(raw) {
     localStorage.markdown = raw;
@@ -239,7 +275,7 @@ const Sliderbar = {
                 in$$(this.$sliderbar, `.sliderbar .content .shrink`).forEach(index => {
                     index.classList.remove(`shrink`);
                 })
-                console.log(`开始`);
+               
             }
             else {
                 this.$sliderbarOpenBtn.classList.remove(`unfold`);
@@ -261,6 +297,7 @@ const Sliderbar = {
 
             }
             this.isShrink = !self.isShrink;
+            console.log(this.isShrink);
         };
         this.$sliderbarExitBtn.onclick = () => {
             if (this.isShowBottom) {
@@ -359,60 +396,82 @@ const Editor = {
         });
     }
 }
-// <div class="node show" id="node1">
-// <header><p contenteditable="true">节点头</p></header>
-// <main>
-//  <div class="item">
-//     <select class="nodeContent">
-//         <option value="bolid">加粗</option>
-//         <option value="italic">斜体</option>
-//         <option value="italicbolid">斜体加粗</option>
-//         <option value="deleteline">删除线</option>
-//     </select>
-//     <input type="text"></input>
-//  </div>
+//节点模板
+//   <div class="node show" id="node1">
+//  <header><input type="text" placeholder="节点名称"></input></header>
+//  <main>
+//   <div class="item">
+//      <select class="nodeContent">
+//          <option value="bolid">加粗</option>
+//          <option value="italic">斜体</option>
+//          <option value="italicbolid">斜体加粗</option>
+//          <option value="deleteline">删除线</option>
+//      </select>
+//      <input type="text"></input>
+//   </div>
 
-// </main>
-// <footer>
-//     <button>新增节点内容</button>
-// </footer>
+//  </main>
+//  <footer>
+//      <button>新增节点内容</button>
+//  </footer>
+// </div> -->
+// <!--<div class="node show sonNode" id="node2">
+//  <header><p contenteditable="true">节点头</p></header>
+//  <main>
+//   <div class="item">
+//      <select class="nodeContent">
+//          <option value="bolid">加粗</option>
+//          <option value="italic">斜体</option>
+//          <option value="italicbolid">斜体加粗</option>
+//          <option value="deleteline">删除线</option>
+//      </select>
+//      <input type="text"></input>
+//   </div>
+
+//  </main>
+//  <footer>
+//      <button>新增节点内容</button>
+//  </footer>
 // </div>
 
 //节点
 class MarkdownNode {
-    constructor(nodeName, nodeID, $nodeDrawing,nodeType) {
+    constructor(nodeName, nodeID, $nodeDrawing, nodeType) {
         this.nodeName = nodeName;
         this.nodeID = nodeID;
         this.$nodeDrawing = $nodeDrawing;
-        this.nodeType=nodeType;
+        this.nodeType = nodeType;
         this.render();
+        this.bind();
     }
     render() {
-        let $node = create$(`div`, [`node`, `show`], this.$nodeID);
+
+        let $node = create$(`div`, [`node`, `show`], this.nodeID);
         let $nodeHeader = create$(`header`);
-        let $nodeHeaderp = create$(`p`);       
-        set$($nodeHeaderp,`contenteditable`,`true`,this.nodeName);
+        let $nodeHeaderp = create$(`input`);
+        set$($nodeHeaderp, `placeholder`, this.nodeName, '');
+
         let $nodemain = create$(`main`);
         let $nodemainitem = create$(`div`, `item`);
         //下拉框
         let $nodeContent = create$(`select`, `nodeContent`);
         let $nodeContentOption1 = create$(`option`);
-        set$($nodeContentOption1,`value`,`bolid`,`加粗`); 
+        set$($nodeContentOption1, `value`, `bolid`, `加粗`);
         let $nodeContentOption2 = create$(`option`);
-        $nodeContentOption2.setAttribute(`value`,`italic`);
-        set$($nodeContentOption2,`value`,`italic`,`斜体`); 
+        $nodeContentOption2.setAttribute(`value`, `italic`);
+        set$($nodeContentOption2, `value`, `italic`, `斜体`);
         let $nodeContentOption3 = create$(`option`);
-        set$($nodeContentOption3,`value`,`italicbolid`,`斜体加粗`); 
+        set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
         let $nodeContentOption4 = create$(`option`);
-        set$($nodeContentOption4,`value`,`deleteline`,`删除线`); 
+        set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
         //节点输入框
-        let $nodeInput=create$(`input`);
-        set$($nodeInput,`type`,`text`,''); 
+        let $nodeInput = create$(`input`);
+        set$($nodeInput, `type`, `text`, '');
         //节点尾部
-        let $nodefooter=create$(`footer`);
-        let $nodebtn=create$(`button`);
-        set$($nodebtn,``,``,'新增节点内容');
-
+        let $nodefooter = create$(`footer`);
+        let $nodebtn = create$(`button`);
+        set$($nodebtn, ``, ``, '新增节点内容');
+        this.$nodebtn=$nodebtn;
         $nodefooter.appendChild($nodebtn);
         $nodeContent.appendChild($nodeContentOption1);
         $nodeContent.appendChild($nodeContentOption2);
@@ -426,19 +485,100 @@ class MarkdownNode {
         $node.appendChild($nodemain);
         $node.appendChild($nodefooter);
         
-        if(this.nodeType==`son`)
-        {
+        this.$nodemainitem=$nodemainitem;
+        this.$nodeDrawing.appendChild($node);
+
+        self = this;
+        if (this.nodeType == `son`) {
             $node.classList.add(`sonNode`);
+            jsPlumb.ready(function () {
+                var common = {
+                    isSource: true,
+                    isTarget: true,
+                    connector: ['Bezier'],
+                    connectorStyle: {
+                        //#00a8ff父节点连接颜色
+                        outlineStroke: '#00a8ff',
+                        //#4cd137子节点连接颜色
+                        strokeWidth: 1
+                    },
+                    connectorHoverStyle: {
+                        strokeWidth: 3
+                    }
 
-        }
-        else
-        {
+                };
+                jsPlumb.addEndpoint($node.id, {
+                    anchor: 'Left'
+                }, common);
+                jsPlumb.addEndpoint($node.id, {
+                    anchor: 'Right'
+                }, common);
+                jsPlumb.addEndpoint($node.id, {
+                    anchor: 'Bottom'
+                }, common);
+                jsPlumb.addEndpoint($node.id, {
+                    anchor: 'Top'
+                }, common);
 
+                jsPlumb.draggable($node.id, { containment: self.$nodeDrawing.id });
+            });
         }
-        
+        else {
+
+            jsPlumb.ready(function () {
+                var common = {
+                    isSource: true,
+                    isTarget: true,
+                    connector: ['Bezier'],
+                    connectorStyle: {
+                        //#00a8ff父节点连接颜色
+                        outlineStroke: '#00a8ff',
+                        //#4cd137子节点连接颜色
+                        strokeWidth: 1
+                    },
+                    connectorHoverStyle: {
+                        strokeWidth: 3
+                    }
+                };
+                jsPlumb.addEndpoint($node.id, {
+                    anchor: 'Left'
+                }, common);
+                jsPlumb.addEndpoint($node.id, {
+                    anchor: 'Right'
+                }, common);
+                jsPlumb.addEndpoint($node.id, {
+                    anchor: 'Bottom'
+                }, common);
+                jsPlumb.draggable($node.id, { containment: self.$nodeDrawing.id });
+            });
+        }
     }
     bind() {
+        this.$nodebtn.onclick=()=>{
+            //下拉框
+        let $nodeContent = create$(`select`, `nodeContent`);
+        let $nodeContentOption1 = create$(`option`);
+        set$($nodeContentOption1, `value`, `bolid`, `加粗`);
+        let $nodeContentOption2 = create$(`option`);
+        $nodeContentOption2.setAttribute(`value`, `italic`);
+        set$($nodeContentOption2, `value`, `italic`, `斜体`);
+        let $nodeContentOption3 = create$(`option`);
+        set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
+        let $nodeContentOption4 = create$(`option`);
+        set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
+        //节点输入框
+        let $nodeInput = create$(`input`);
+        set$($nodeInput, `type`, `text`, '');
+        
+        $nodeContent.appendChild($nodeContentOption1);
+        $nodeContent.appendChild($nodeContentOption2);
+        $nodeContent.appendChild($nodeContentOption3);
+        $nodeContent.appendChild($nodeContentOption4);
 
+        this.$nodemainitem.appendChild($nodeContent);
+        this.$nodemainitem.appendChild($nodeInput);
+        
+        }
     }
 }
 
@@ -448,53 +588,25 @@ const NodeDrawing = {
         this.$nodeDrawing = $(`.sliderbarContent.node .nodeDrawing`);
         this.$addFPpointBtn = $(`.sliderbarContent.node .buttons button.addFPpoint`);
         this.$addSppointBtn = $(`.sliderbarContent.node .buttons button.addSPpoint`);
-        new MarkdownNode(`节点3`, `node3`, this.$nodeDrawing,`father`);
-        jsPlumb.ready(function () {
-            jsPlumb.setContainer('diagramContainer')
+        this.markdown = localStorage.markdown || TPL;//检测是否存在localStorage.markdown，如果有则传入localStorage.markdown内容，否则传入初始语句
+        // new MarkdownNode(`节点3`, `node3`, this.$nodeDrawing, `father`);
+        // new MarkdownNode(`节点4`, `node4`, this.$nodeDrawing, `son`);
 
-            var common = {
-                isSource: true,
-                isTarget: true,
-                connector: ['Bezier'],
-                connectorStyle: {
-                    //#00a8ff父节点连接颜色
-                    outlineStroke: '#00a8ff',
-                    
-                    strokeWidth: 1
-                  },
-                  connectorHoverStyle: {
-                    strokeWidth: 3
-                  }
-            };
-
-            jsPlumb.addEndpoint('node1', {
-                anchors: ['Right']
-            }, common);
-
-            jsPlumb.addEndpoint('node2', {
-                anchor: 'Bottom'
-            }, common);
-
-            jsPlumb.addEndpoint('node2', {
-                anchor: 'Left'
-            }, common);
-          
-            //  jsPlumb.connect({
-            //     source:`node1`,
-            //     target:`node2`,
-            //     endpoint:`Rectangle`
-            //  })
-            jsPlumb.draggable(`node1`,{containment:`Drawing`});
-            jsPlumb.draggable(`node2`,{containment:`Drawing`});
-        })
+        this.defalutNodeName=`节点`;
+        this.defalutNodeId=`node`;
+        
         this.bind();
     },
     bind() {
+        let nodeindex=0;
         this.$addFPpointBtn.onclick = () => {
-
+            
+            new MarkdownNode(this.defalutNodeName+nodeindex, this.defalutNodeId+nodeindex, this.$nodeDrawing, `father`)
+            nodeindex++;
         }
         this.$addSppointBtn.onclick = () => {
-
+            new MarkdownNode(this.defalutNodeName+nodeindex, this.defalutNodeId+nodeindex, this.$nodeDrawing, `son`);
+            nodeindex++;
         }
 
     }

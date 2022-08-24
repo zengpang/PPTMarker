@@ -425,8 +425,8 @@ body {
 { 
     display: grid;
     grid-template-rows: auto auto auto;
-    width: 150px;
-    height: 180px;
+    width: 160px;
+    height: 190px;
     border-radius: 10px;
     position: absolute;
     border:2px solid #393939;
@@ -456,7 +456,7 @@ body {
 {
     display: grid;
     grid-template-rows: 40px auto auto;
-    width: 140px;
+    width: 150px;
     height: 160px;
     border-radius: 10px;
     position: absolute;
@@ -490,8 +490,26 @@ body {
     flex-direction: column;
     align-items: center;
 }
-.sliderbarContent.node .nodeDrawing .node header p{
+.sliderbarContent.node .nodeDrawing .node header input{
     height: auto;
+    width: 80%;
+    text-align: center;
+    color: #C1C1C1;
+    font-size: 18px;
+    background-color: transparent;
+    border: none;
+}
+.sliderbarContent.node .nodeDrawing .node header input::-ms-input-placeholder
+{
+    color: #C1C1C1;
+}
+.sliderbarContent.node .nodeDrawing .node header input::-moz-placeholder
+{
+    color: #C1C1C1;
+}
+.sliderbarContent.node .nodeDrawing .node header input::-webkit-input-placeholder
+{
+    color: #C1C1C1;
 }
 .sliderbarContent.node .nodeDrawing .node main
 {
@@ -499,6 +517,7 @@ body {
     font-size: 20px;
     flex-direction: column;
     align-items: center;
+    overflow-y:auto;
 }
 .sliderbarContent.node .nodeDrawing .node main .item:nth-child(n+1)
 {
@@ -518,6 +537,15 @@ body {
     border:2px solid #393939;
     background-color: transparent;
 }
+.sliderbarContent.node .nodeDrawing .node main .item .nodeContent
+{
+    width: 55px;
+    height: 30px;
+    margin-right: 5px;
+    color: #C1C1C1;
+    border:2px solid #393939;
+    background-color: transparent;
+}
 .sliderbarContent.node .nodeDrawing .node main .item input
 {
     width: 60px;
@@ -525,6 +553,7 @@ body {
     color: #C1C1C1;
     background-color: transparent;
     outline: none;
+    
     border:2px solid #393939;
 }
 .sliderbarContent.node .nodeDrawing .node footer
@@ -533,6 +562,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-bottom: 13px;
 }
 .sliderbarContent.node .nodeDrawing .node footer button
 {
@@ -554,6 +584,7 @@ body {
     border: none;
     outline: none;
 } */
+
 .sliderbarContent.node .buttons button{
     width: 120px;
     height: 30px;
