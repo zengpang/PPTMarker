@@ -1,4 +1,11 @@
-
+//默认节点X坐标
+let nodeDPosX = 10;
+//默认节点Y坐标
+let nodeDposY = 10;
+let nodesJSONStr = ``
+let nodeindex = 0;
+let defalutNodeId = `node`;
+let nodesInfos=``;
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const create$ = (type, classNames, id) => {
@@ -34,19 +41,94 @@ const set$ = (element, attributeName, attributeValue, text) => {
                 element.innerHTML = text;
             }; break;
     }
-}
+};
+const setNodeConnect=node=>{
+    node.setconnectId(defalutNodeId+(nodeindex+1));
+    node.setconnectSPoint(`Right`);
+    node.setconnectEPoint(`Left`);
+};
 const in$ = (f, s) => f.querySelector(s);
 const in$$ = (f, s) => f.querySelectorAll(s);
 const isMain = str => (/^#{1,2}(?!#)/).test(str);
 const isSub = str => (/^#{3}(?!#)/).test(str);
-
-function convert(raw) 
+const isEmpty = str => (str == null || str == ``);
+function nodeConnect(nodeinfo)
 {
-    let arr = raw.split(/\n(?=\s*#)/).filter(s => s != "").map(s => s.trim());//根据#号分割用户输入内容
+     
+       
+        if (nodeinfo.isConnect) {
+            jsPlumb.ready(function () {
+                console.log(nodeinfo.nodeID);
+                jsPlumb.connect({
+                    source: nodeinfo.nodeID,
+                    target: nodeinfo.connectId,
+                    
+                    connector: ['Bezier'],
+                    paintStyle: {     //#00a8ff父节点连接颜色
+                        stroke: '#00a8ff',
+                        //#4cd137子节点连接颜色
+                        strokeWidth: 3
+                    },
+                 
+                    anchor: [nodeinfo.connectStartPoint, nodeinfo.connectEndPoint]
+                })
+
+            });
+        }
+  
+}
+function writeNodeInfoJSON(nodeinfo) {
    
+    this.nodeId = nodeinfo.getNodeId();
+    
+    if (isEmpty(nodeinfo.getNodeX())) {
+        nodeinfo.setNodeX(nodeDPosX);
+    }
+    if (isEmpty(nodeinfo.getNodeY())) {
+        nodeinfo.setNodeY(nodeDposY);
+    }
+    this.nodePosX = nodeinfo.getNodeX();
+    this.nodePosY = nodeinfo.getNodeY();
+    let nodesJSONItem = `{
+        "nodeId":"${this.nodeId}",
+        "nodePosX":"${this.nodePosX}",
+        "nodePosY":"${this.nodePosY}"
+    }`;
+    if (nodesJSONStr == ``) {
+        
+        nodesJSONItem = nodesJSONItem ;
+      //  console.log(nodesJSONItem);
+    }
+    else {
+        nodesJSONItem = `,` + nodesJSONItem;
+      
+    }
+    nodesJSONStr += nodesJSONItem;
+    localStorage.nodesInfo = `[${nodesJSONStr}]`;
+
+}
+function readNodeInfoJSON() {
+    if(isEmpty(localStorage.nodesInfo))
+    {
+         return;
+    }
+
+    let nodesPosInfo=JSON.parse(localStorage.nodesInfo);
+    console.log(nodesPosInfo);
+    nodesPosInfo.forEach(index=>{
+        let nodeElement=document.getElementById(index.nodeId);
+        nodeElement.style.left=index.nodePosX;
+        nodeElement.style.top=index.nodePosY;
+    })
+}
+function convert(raw) {
+    let arr = raw.split(/\n(?=\s*#)/).filter(s => s != "").map(s => s.trim());//根据#号分割用户输入内容
+    
     let html = ``;
     //遍历用户输入
     for (let i = 0; i < arr.length; i++) {
+       // console.log(arr[i].split(/\n+|\s+/));
+      // console.log((arr[i].split(/#+|\n/)));
         //判断下一行是否为空
         if (arr[i + 1] !== undefined) {
             switch (true) {
@@ -123,41 +205,139 @@ function convert(raw)
     }
     return html;
 }
-class NodeInfo{
-    constructor()
-    {
+class NodeInfo {
+    constructor() {
 
     }
-    setNodeName(nodeName)
-    {
-        this.nodeName=nodeName;
+    setNodeName(nodeName) {
+        this.nodeName = nodeName;
     }
-    getNodeName()
-    {
+    getNodeName() {
         return this.nodeName;
     }
-    setNodeId(nodeId)
-    {
-        this.nodeId=nodeId;
+    setNodeId(nodeId) {
+        this.nodeId = nodeId;
     }
-    getNodeId()
-    {
+    getNodeId() {
         return this.nodeId;
     }
-    setNodeType(nodeType)
-    {
-      this.nodeType=nodeType;
+    setNodeType(nodeType) {
+        this.nodeType = nodeType;
     }
-    getNodeType()
-    {
+    getNodeType() {
         return this.nodeType;
     }
+    setNodeX(nodePosX) {
+        this.nodePosX = nodePosX;
+    }
+    getNodeX() {
+        return this.nodePosX;
+    }
+    setNodeY(nodePosY) {
+        this.nodePosY = nodePosY;
+    }
+    getNodeY() {
+        return this.nodePosY;
+    }
+    setNodeContent(nodeContent)
+    {
+       this.nodeContent=nodeContent;
+    }
+    getNodeContent(){
+        return this.nodeContent;
+    }
+    setconnectId(nodeConnectId) {
+        this.nodeConnectId = nodeConnectId;
+    }
+    getconnectId() {
+        return this.nodeConnectId;
+    }
+    setconnectSPoint(connectSPoint) {
+        this.connectSPoint = connectSPoint;
+    }
+    getconnectSPoint() {
+        return this.connectSPoint;
+    }
+    setconnectEPoint(connectEPoint) {
+        this.connectEPoint = connectEPoint;
+    }
+    getconnectEPoint() {
+        return this.connectEPoint;
+    }
 }
-function convertToNode(raw)
-{
+function convertToNode(raw) {
     let arr = raw.split(/\n(?=\s*#)/).filter(s => s != "").map(s => s.trim());
-    let nodes=new Array().fill(new NodeInfo());
     
+    let nodes = new Array().fill(``);
+    // let nodeInfo = new NodeInfo();
+    // nodeInfo.setNodeName(`节点五`);
+    // nodeInfo.setNodeId(`node5`);
+    // nodeInfo.setNodeType(`father`);
+    // nodeInfo.setNodeX(nodeDPosX);
+    // nodeInfo.setNodeY(nodeDposY);
+
+    for (let i = 0; i < arr.length; i++) {
+        let nodeinfoStrs=arr[i].split(/#+|\n/);
+        nodeinfoStrs.forEach(index=>{
+            index.trim();
+        });
+        let nodeInfoItem = new NodeInfo();
+        nodeInfoItem.setNodeName(nodeinfoStrs[1]);
+        let nodeContentStr=``;
+        for(let i=2;i<nodeinfoStrs.length;i++)
+        {
+            nodeContentStr+=nodeinfoStrs[i];
+        }
+        nodeInfoItem.setNodeContent(nodeContentStr);
+        nodeInfoItem.setNodeId(defalutNodeId+nodeindex);
+        if(isMain(arr[i]))
+        {
+            nodeInfoItem.setNodeType(`father`);
+        }
+        else
+        {
+            nodeInfoItem.setNodeType(`son`);
+        }
+        //判断下一行是否为空
+        if (arr[i + 1] !== undefined) {
+            switch (true) {
+                
+                case (isMain(arr[i]) && isMain(arr[i + 1])):
+                    {
+                        setNodeConnect(nodeInfoItem);
+                        
+                    }; break;
+                case (isMain(arr[i]) && isSub(arr[i + 1])):
+                    {
+                        setNodeConnect(nodeInfoItem);
+                    }; break;
+                case (isSub(arr[i]) && isSub(arr[i + 1])):
+                    {
+                        setNodeConnect(nodeInfoItem);
+                    }; break;
+                case (isSub(arr[i]) && isMain(arr[i + 1])):
+                    {
+                        nodeInfoItem.setconnectId(``);
+                    }; break;
+            }
+        }
+        else //如果为空判断遍历到最后一行
+        {
+            switch (true) {
+                case (isMain(arr[i])):
+                    {
+                        nodeInfoItem.setconnectId(``);
+                    }; break;
+                case (isSub(arr[i])):
+                    {
+                        nodeInfoItem.setconnectId(``);
+                    }; break;
+            }
+        }
+        nodes[i]=nodeInfoItem;
+        nodeindex++;
+    }
+    return nodes;
 }
 function loadMarkdown(raw) {
     localStorage.markdown = raw;
@@ -275,7 +455,7 @@ const Sliderbar = {
                 in$$(this.$sliderbar, `.sliderbar .content .shrink`).forEach(index => {
                     index.classList.remove(`shrink`);
                 })
-               
+
             }
             else {
                 this.$sliderbarOpenBtn.classList.remove(`unfold`);
@@ -294,9 +474,9 @@ const Sliderbar = {
                 this.$$sliderbarInfo.forEach(index => {
                     index.classList.add(`shrink`);
                 });
-
+                // this.isShrink = true;
             }
-            this.isShrink = !self.isShrink;
+            this.isShrink = !this.isShrink;
             console.log(this.isShrink);
         };
         this.$sliderbarExitBtn.onclick = () => {
@@ -397,24 +577,25 @@ const Editor = {
     }
 }
 //节点模板
-//   <div class="node show" id="node1">
-//  <header><input type="text" placeholder="节点名称"></input></header>
-//  <main>
-//   <div class="item">
-//      <select class="nodeContent">
-//          <option value="bolid">加粗</option>
-//          <option value="italic">斜体</option>
-//          <option value="italicbolid">斜体加粗</option>
-//          <option value="deleteline">删除线</option>
-//      </select>
-//      <input type="text"></input>
-//   </div>
-
-//  </main>
-//  <footer>
-//      <button>新增节点内容</button>
-//  </footer>
-// </div> -->
+// <div class="node show" id="node1">
+//                 <header><input type="text" placeholder="节点名称"></input><p class="iconfont icon-close closeBtn"></p></header>
+//                 <main>
+//                  <div class="item">
+//                     <select class="nodeContent">
+//                         <option value="bolid">加粗</option>
+//                         <option value="italic">斜体</option>
+//                         <option value="italicbolid">斜体加粗</option>
+//                         <option value="deleteline">删除线</option>
+//                     </select>
+//                     <input type="text"></input>
+//                  </div>
+               
+//                 </main>
+//                 <footer>
+//                     <button>新增节点内容</button>
+//                 </footer>
+//                </div> 
+//          </div>
 // <!--<div class="node show sonNode" id="node2">
 //  <header><p contenteditable="true">节点头</p></header>
 //  <main>
@@ -436,11 +617,50 @@ const Editor = {
 
 //节点
 class MarkdownNode {
-    constructor(nodeName, nodeID, $nodeDrawing, nodeType) {
-        this.nodeName = nodeName;
-        this.nodeID = nodeID;
+    //nodeName, nodeID, $nodeDrawing, nodeType, nodePosX, nodePosY
+    constructor(nodeInfo, $nodeDrawing) {
+        this.nodeName = nodeInfo.getNodeName();
+        this.nodeID = nodeInfo.getNodeId();
         this.$nodeDrawing = $nodeDrawing;
-        this.nodeType = nodeType;
+        this.nodeType = nodeInfo.getNodeType();
+        this.isConnect = true;
+        this.nodes=nodesInfos;
+        if (isEmpty(nodeInfo.getNodeX())) {
+            nodeInfo.setNodeX(nodeDPosX);
+        }
+        if (isEmpty(nodeInfo.getNodeY())) {
+            nodeInfo.setNodeY(nodeDposY);
+        }
+        if(isEmpty(nodeInfo.getNodeContent()))
+        {
+            nodeInfo.setNodeContent(``);
+        }
+        // if (nodeInfo.getNodeX() == null || nodeInfo.getNodeX() == ``) {
+        //     nodeInfo.setNodeX(nodeDPosX);
+        // }
+        // if (nodeInfo.getNodeY() == null || nodeInfo.getNodeY() == ``) {
+        //     nodeInfo.setNodeY(nodeDposY);
+        // }
+        // if(nodeInfo.getNodeId()==null||nodeInfo.getNodeId()==``||
+        //    nodeInfo.getconnectSPoint()==null||nodeInfo.getconnectSPoint()==``)
+        // {
+
+        // }
+        if (isEmpty(nodeInfo.getconnectId()) ||
+            isEmpty(nodeInfo.getconnectEPoint()) ||
+            isEmpty(nodeInfo.getconnectSPoint())) {
+            this.isConnect = false;
+        }
+        else {
+            this.connectId = nodeInfo.getconnectId();
+            console.log(`当前节点ID为${this.nodeID},连接ID为${this.connectId}`);
+            this.connectStartPoint = nodeInfo.getconnectSPoint();
+            this.connectEndPoint = nodeInfo.getconnectEPoint();
+            this.isConnect=true;
+        }
+        this.nodePosX = nodeInfo.nodePosX;
+        this.nodePosY = nodeInfo.nodePosY;
+        this.nodeContent=nodeInfo.getNodeContent();
         this.render();
         this.bind();
     }
@@ -450,6 +670,7 @@ class MarkdownNode {
         let $nodeHeader = create$(`header`);
         let $nodeHeaderp = create$(`input`);
         set$($nodeHeaderp, `placeholder`, this.nodeName, '');
+        let $nodeHCloseBtn=create$(`p`,[`iconfont`,`icon-close`,`closeBtn`]);
 
         let $nodemain = create$(`main`);
         let $nodemainitem = create$(`div`, `item`);
@@ -470,8 +691,9 @@ class MarkdownNode {
         //节点尾部
         let $nodefooter = create$(`footer`);
         let $nodebtn = create$(`button`);
-        set$($nodebtn, ``, ``, '新增节点内容');
-        this.$nodebtn=$nodebtn;
+        set$($nodebtn, ``, ``, '新增节点内容');   
+        this.$nodebtn = $nodebtn; 
+        this.$nodeCloseBtn=$nodeHCloseBtn;  
         $nodefooter.appendChild($nodebtn);
         $nodeContent.appendChild($nodeContentOption1);
         $nodeContent.appendChild($nodeContentOption2);
@@ -481,13 +703,16 @@ class MarkdownNode {
         $nodemainitem.appendChild($nodeInput);
         $nodemain.appendChild($nodemainitem);
         $nodeHeader.appendChild($nodeHeaderp);
+        $nodeHeader.appendChild($nodeHCloseBtn);
         $node.appendChild($nodeHeader);
         $node.appendChild($nodemain);
         $node.appendChild($nodefooter);
-        
-        this.$nodemainitem=$nodemainitem;
-        this.$nodeDrawing.appendChild($node);
 
+        this.$nodemainitem = $nodemainitem;
+        $nodeInput.value=this.nodeContent;
+        this.$nodeDrawing.appendChild($node);
+        $node.style.left = this.nodePosX;
+        $node.style.top = this.nodePosY;
         self = this;
         if (this.nodeType == `son`) {
             $node.classList.add(`sonNode`);
@@ -519,6 +744,7 @@ class MarkdownNode {
                 jsPlumb.addEndpoint($node.id, {
                     anchor: 'Top'
                 }, common);
+
 
                 jsPlumb.draggable($node.id, { containment: self.$nodeDrawing.id });
             });
@@ -552,63 +778,132 @@ class MarkdownNode {
                 jsPlumb.draggable($node.id, { containment: self.$nodeDrawing.id });
             });
         }
-    }
-    bind() {
-        this.$nodebtn.onclick=()=>{
-            //下拉框
-        let $nodeContent = create$(`select`, `nodeContent`);
-        let $nodeContentOption1 = create$(`option`);
-        set$($nodeContentOption1, `value`, `bolid`, `加粗`);
-        let $nodeContentOption2 = create$(`option`);
-        $nodeContentOption2.setAttribute(`value`, `italic`);
-        set$($nodeContentOption2, `value`, `italic`, `斜体`);
-        let $nodeContentOption3 = create$(`option`);
-        set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
-        let $nodeContentOption4 = create$(`option`);
-        set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
-        //节点输入框
-        let $nodeInput = create$(`input`);
-        set$($nodeInput, `type`, `text`, '');
-        
-        $nodeContent.appendChild($nodeContentOption1);
-        $nodeContent.appendChild($nodeContentOption2);
-        $nodeContent.appendChild($nodeContentOption3);
-        $nodeContent.appendChild($nodeContentOption4);
+       
+    };
+    // nodeConnect(){
+    //     self=this;
+    //     console.log()
+    //     if (this.isConnect) {
+    //         jsPlumb.ready(function () {
+    //             console.log(self.nodeID);
+    //             jsPlumb.connect({
+    //                 source: self.nodeID,
+    //                 target: this.connectId,
+    //                 endpoint: 'Rectangle',
+    //                 connector: ['Bezier'],
+    //                 anchor: [this.connectStartPoint, this.connectEndPoint]
+    //             })
 
-        this.$nodemainitem.appendChild($nodeContent);
-        this.$nodemainitem.appendChild($nodeInput);
-        
+    //         });
+    //     }
+    // };
+    bind() {
+        this.$nodebtn.onclick = () => {
+            //下拉框
+            let $nodeContent = create$(`select`, `nodeContent`);
+            let $nodeContentOption1 = create$(`option`);
+            set$($nodeContentOption1, `value`, `bolid`, `加粗`);
+            let $nodeContentOption2 = create$(`option`);
+            $nodeContentOption2.setAttribute(`value`, `italic`);
+            set$($nodeContentOption2, `value`, `italic`, `斜体`);
+            let $nodeContentOption3 = create$(`option`);
+            set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
+            let $nodeContentOption4 = create$(`option`);
+            set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
+            //节点输入框
+            let $nodeInput = create$(`input`);
+            set$($nodeInput, `type`, `text`, '');
+
+            $nodeContent.appendChild($nodeContentOption1);
+            $nodeContent.appendChild($nodeContentOption2);
+            $nodeContent.appendChild($nodeContentOption3);
+            $nodeContent.appendChild($nodeContentOption4);
+
+            this.$nodemainitem.appendChild($nodeContent);
+            this.$nodemainitem.appendChild($nodeInput);
+
         }
-    }
+        this.$nodeCloseBtn.onclick=()=>{
+
+            delete nodesInfos[nodesInfos.map(index=>{return index.getNodeId()}).indexOf(this.nodeID)];
+            jsPlumb.remove(this.nodeID);
+            
+        }
+    };
 }
 
 //节点绘制板块
 const NodeDrawing = {
     init() {
         this.$nodeDrawing = $(`.sliderbarContent.node .nodeDrawing`);
+        this.$savepointBtn=$(`.sliderbarContent.node .buttons button.save`);
         this.$addFPpointBtn = $(`.sliderbarContent.node .buttons button.addFPpoint`);
         this.$addSppointBtn = $(`.sliderbarContent.node .buttons button.addSPpoint`);
         this.markdown = localStorage.markdown || TPL;//检测是否存在localStorage.markdown，如果有则传入localStorage.markdown内容，否则传入初始语句
         // new MarkdownNode(`节点3`, `node3`, this.$nodeDrawing, `father`);
         // new MarkdownNode(`节点4`, `node4`, this.$nodeDrawing, `son`);
-
-        this.defalutNodeName=`节点`;
-        this.defalutNodeId=`node`;
-        
+       
+        nodesInfos=convertToNode(this.markdown);
+       // this.nodes=nodesInfos;
+        let markdownNodes=new Array().fill(``);
+        for(let index=0;index<nodesInfos.length;index++)
+        {
+            markdownNodes[index]=new MarkdownNode(nodesInfos[index] , this.$nodeDrawing);
+        };
+        markdownNodes.forEach(index=>{
+            nodeConnect(index);
+        });
+        readNodeInfoJSON();
+        this.defalutNodeName = `节点`;
         this.bind();
     },
     bind() {
-        let nodeindex=0;
+        self=this;
+        //添加父按钮
         this.$addFPpointBtn.onclick = () => {
+            let nodeinfo=new NodeInfo();
+            nodeinfo.setNodeName(this.defalutNodeName + nodeindex);
+            nodeinfo.setNodeId(defalutNodeId + nodeindex);
+            nodeinfo.setNodeType(`father`);
+            nodesInfos.push(nodeinfo);
             
-            new MarkdownNode(this.defalutNodeName+nodeindex, this.defalutNodeId+nodeindex, this.$nodeDrawing, `father`)
+            new MarkdownNode(nodeinfo , this.$nodeDrawing)
             nodeindex++;
         }
+        //添加子按钮
         this.$addSppointBtn.onclick = () => {
-            new MarkdownNode(this.defalutNodeName+nodeindex, this.defalutNodeId+nodeindex, this.$nodeDrawing, `son`);
+            let nodeinfo=new NodeInfo();
+            nodeinfo.setNodeName(this.defalutNodeName + nodeindex);
+            nodeinfo.setNodeId(defalutNodeId + nodeindex);
+            nodeinfo.setNodeType(`son`);
+            nodesInfos.push(nodeinfo);
+            new MarkdownNode(nodeinfo , this.$nodeDrawing);
             nodeindex++;
         }
-
+        this.$savepointBtn.onclick=()=>{
+            nodesJSONStr="";
+            this.markdown="";
+            nodesInfos.forEach(index=>{
+               let node=document.getElementById(index.getNodeId());
+               let nodecontent=in$(node,`.item input`).value;
+               index.setNodeX(node.style.left);
+               index.setNodeY(node.style.top);
+               index.setNodeContent(nodecontent);
+              
+               writeNodeInfoJSON(index);
+               if(index.getNodeType()!=`father`)
+               {
+                   this.markdown+=`\n### ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
+               }
+               else
+               {
+                   this.markdown+=`\n## ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
+               }
+            })
+            console.log(JSON.parse(localStorage.nodesInfo));
+            localStorage.markdown=this.markdown;
+            location.reload();
+        }
     }
 }
 //Pdf下载
@@ -627,7 +922,7 @@ const Print = {
             //  $link.setAttribute(`href`, location.href.replace(/#\/.+/, `?print-pdf`));
             // $link.setAttribute(`href`, location.href + `?print-pdf`);
             $link.setAttribute(`href`, location.href.replace(/#\/.+/, ``) + `?print-pdf`);
-            console.log(location.href);
+           
             $link.click();
         })
         window.onafterprint = () => window.close();

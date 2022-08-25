@@ -140,8 +140,11 @@ const Editor = {
         this.$editInput.value = this.markdown;
         this.$slideContainer.innerHTML = convert(this.markdown);
         Reveal.initialize({
+            controls: true,
+            progress: true,
+            center: localStorage.align === 'left-top' ? false : true,
             hash: true,
-
+            transition: localStorage.transition || 'slide',
             // Learn about plugins: https://revealjs.com/plugins/
             plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
         });
@@ -206,7 +209,7 @@ const Print={
             let $link=document.createElement(`a`);
             $link.setAttribute(`target`,`_blank`);
            // $link.setAttribute(`href`,location.href.replace(/#\/.+/,`?print-pdf`));
-           $link.setAttribute(`href`, location.href+= `?print-pdf`);
+           $link.setAttribute(`href`, location.href.replace(/#\/.+/, ``) + `?print-pdf`);
             $link.click();
         })
         window.onafterprint=()=>window.close();
