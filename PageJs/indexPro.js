@@ -5,7 +5,7 @@ let nodeDposY = 10;
 let nodesJSONStr = ``
 let nodeindex = 0;
 let defalutNodeId = `node`;
-let nodesInfos=``;
+let nodesInfos = ``;
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const create$ = (type, classNames, id) => {
@@ -42,8 +42,8 @@ const set$ = (element, attributeName, attributeValue, text) => {
             }; break;
     }
 };
-const setNodeConnect=node=>{
-    node.setconnectId(defalutNodeId+(nodeindex+1));
+const setNodeConnect = node => {
+    node.setconnectId(defalutNodeId + (nodeindex + 1));
     node.setconnectSPoint(`Right`);
     node.setconnectEPoint(`Left`);
 };
@@ -52,34 +52,33 @@ const in$$ = (f, s) => f.querySelectorAll(s);
 const isMain = str => (/^#{1,2}(?!#)/).test(str);
 const isSub = str => (/^#{3}(?!#)/).test(str);
 const isEmpty = str => (str == null || str == ``);
-function nodeConnect(nodeinfo)
-{   
-        if (nodeinfo.isConnect) {
-            jsPlumb.ready(function () {
-                console.log(nodeinfo.nodeID);
-                jsPlumb.connect({
-                    source: nodeinfo.nodeID,
-                    target: nodeinfo.connectId,
-                    
-                    connector: ['Bezier'],
-                    paintStyle: {     //#00a8ff父节点连接颜色
-                        stroke: '#00a8ff',
-                        //#4cd137子节点连接颜色
-                        strokeWidth: 3
-                    },
-                 
-                    anchor: [nodeinfo.connectStartPoint, nodeinfo.connectEndPoint]
-                })
+function nodeConnect(nodeinfo) {
+    if (nodeinfo.isConnect) {
+        jsPlumb.ready(function () {
+            console.log(nodeinfo.nodeID);
+            jsPlumb.connect({
+                source: nodeinfo.nodeID,
+                target: nodeinfo.connectId,
 
-            });
-        }
-  
+                connector: ['Bezier'],
+                paintStyle: {     //#00a8ff父节点连接颜色
+                    stroke: '#00a8ff',
+                    //#4cd137子节点连接颜色
+                    strokeWidth: 3
+                },
+
+                anchor: [nodeinfo.connectStartPoint, nodeinfo.connectEndPoint]
+            })
+
+        });
+    }
+
 }
 //写入JSON格式的节点位置数据
 function writeNodeInfoJSON(nodeinfo) {
-   
+
     this.nodeId = nodeinfo.getNodeId();
-    
+
     if (isEmpty(nodeinfo.getNodeX())) {
         nodeinfo.setNodeX(nodeDPosX);
     }
@@ -94,13 +93,13 @@ function writeNodeInfoJSON(nodeinfo) {
         "nodePosY":"${this.nodePosY}"
     }`;
     if (nodesJSONStr == ``) {
-        
-        nodesJSONItem = nodesJSONItem ;
-      //  console.log(nodesJSONItem);
+
+        nodesJSONItem = nodesJSONItem;
+        //  console.log(nodesJSONItem);
     }
     else {
         nodesJSONItem = `,` + nodesJSONItem;
-      
+
     }
     nodesJSONStr += nodesJSONItem;
     localStorage.nodesInfo = `[${nodesJSONStr}]`;
@@ -108,31 +107,29 @@ function writeNodeInfoJSON(nodeinfo) {
 }
 //读取JSON格式的节点位置数据
 function readNodeInfoJSON() {
-    if(isEmpty(localStorage.nodesInfo))
-    {
-         return;
+    if (isEmpty(localStorage.nodesInfo)) {
+        return;
     }
 
-    let nodesPosInfo=JSON.parse(localStorage.nodesInfo);
+    let nodesPosInfo = JSON.parse(localStorage.nodesInfo);
     console.log(nodesPosInfo);
-    nodesPosInfo.forEach(index=>{
-        let nodeElement=document.getElementById(index.nodeId);
-        if(nodeElement!=null)
-        {
-            nodeElement.style.left=index.nodePosX;
-            nodeElement.style.top=index.nodePosY;
+    nodesPosInfo.forEach(index => {
+        let nodeElement = document.getElementById(index.nodeId);
+        if (nodeElement != null) {
+            nodeElement.style.left = index.nodePosX;
+            nodeElement.style.top = index.nodePosY;
         }
 
     })
 }
 function convert(raw) {
     let arr = raw.split(/\n(?=\s*#)/).filter(s => s != "").map(s => s.trim());//根据#号分割用户输入内容
-    
+
     let html = ``;
     //遍历用户输入
     for (let i = 0; i < arr.length; i++) {
-       // console.log(arr[i].split(/\n+|\s+/));
-      // console.log((arr[i].split(/#+|\n/)));
+        // console.log(arr[i].split(/\n+|\s+/));
+        // console.log((arr[i].split(/#+|\n/)));
         //判断下一行是否为空
         if (arr[i + 1] !== undefined) {
             switch (true) {
@@ -244,11 +241,10 @@ class NodeInfo {
     getNodeY() {
         return this.nodePosY;
     }
-    setNodeContent(nodeContent)
-    {
-       this.nodeContent=nodeContent;
+    setNodeContent(nodeContent) {
+        this.nodeContent = nodeContent;
     }
-    getNodeContent(){
+    getNodeContent() {
         return this.nodeContent;
     }
     setconnectId(nodeConnectId) {
@@ -272,7 +268,7 @@ class NodeInfo {
 }
 function convertToNode(raw) {
     let arr = raw.split(/\n(?=\s*#)/).filter(s => s != "").map(s => s.trim());
-    
+
     let nodes = new Array().fill(``);
     // let nodeInfo = new NodeInfo();
     // nodeInfo.setNodeName(`节点五`);
@@ -282,35 +278,32 @@ function convertToNode(raw) {
     // nodeInfo.setNodeY(nodeDposY);
 
     for (let i = 0; i < arr.length; i++) {
-        let nodeinfoStrs=arr[i].split(/#+|\n/);
-        nodeinfoStrs.forEach(index=>{
+        let nodeinfoStrs = arr[i].split(/#+|\n/);
+        nodeinfoStrs.forEach(index => {
             index.trim();
         });
         let nodeInfoItem = new NodeInfo();
         nodeInfoItem.setNodeName(nodeinfoStrs[1]);
-        let nodeContentStr=``;
-        for(let i=2;i<nodeinfoStrs.length;i++)
-        {
-            nodeContentStr+=nodeinfoStrs[i];
+        let nodeContentStr = ``;
+        for (let i = 2; i < nodeinfoStrs.length; i++) {
+            nodeContentStr += nodeinfoStrs[i];
         }
         nodeInfoItem.setNodeContent(nodeContentStr);
-        nodeInfoItem.setNodeId(defalutNodeId+nodeindex);
-        if(isMain(arr[i]))
-        {
+        nodeInfoItem.setNodeId(defalutNodeId + nodeindex);
+        if (isMain(arr[i])) {
             nodeInfoItem.setNodeType(`father`);
         }
-        else
-        {
+        else {
             nodeInfoItem.setNodeType(`son`);
         }
         //判断下一行是否为空
         if (arr[i + 1] !== undefined) {
             switch (true) {
-                
+
                 case (isMain(arr[i]) && isMain(arr[i + 1])):
                     {
                         setNodeConnect(nodeInfoItem);
-                        
+                       
                     }; break;
                 case (isMain(arr[i]) && isSub(arr[i + 1])):
                     {
@@ -339,7 +332,7 @@ function convertToNode(raw) {
                     }; break;
             }
         }
-        nodes[i]=nodeInfoItem;
+        nodes[i] = nodeInfoItem;
         nodeindex++;
     }
     return nodes;
@@ -417,6 +410,7 @@ const Sliderbar = {
                         this.$sliderbarNodeContent.classList.remove(`show`);
                         this.$sliderbarThemeContent.classList.add(`show`);
                     }; break;
+                    //编辑器
                     case `redact`: {
                         this.$sliderbardownloadContent.classList.remove(`show`);
                         this.$sliderbarThemeContent.classList.remove(`show`);
@@ -546,7 +540,7 @@ const Theme = {
         this.$reveal.classList.add(this.$align.value);
     }
 }
-//编辑器
+//编辑器(废弃功能)
 const Editor = {
     init() {
         console.log(`编译器初始化`);
@@ -580,11 +574,12 @@ const Editor = {
             plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
         });
     },
-    update()
-    {
+    update() {
         this.$editInput.value = this.markdown;
     }
 }
+
+
 //节点模板
 // <div class="node show" id="node1">
 //                 <header><input type="text" placeholder="节点名称"></input><p class="iconfont icon-close closeBtn"></p></header>
@@ -598,7 +593,7 @@ const Editor = {
 //                     </select>
 //                     <input type="text"></input>
 //                  </div>
-               
+
 //                 </main>
 //                 <footer>
 //                     <button>新增节点内容</button>
@@ -633,19 +628,18 @@ class MarkdownNode {
         this.$nodeDrawing = $nodeDrawing;
         this.nodeType = nodeInfo.getNodeType();
         this.isConnect = true;
-        this.nodeInfo=nodeInfo;
-       
+        this.nodeInfo = nodeInfo;
+
         if (isEmpty(nodeInfo.getNodeX())) {
             nodeInfo.setNodeX(nodeDPosX);
         }
         if (isEmpty(nodeInfo.getNodeY())) {
             nodeInfo.setNodeY(nodeDposY);
         }
-        if(isEmpty(nodeInfo.getNodeContent()))
-        {
+        if (isEmpty(nodeInfo.getNodeContent())) {
             nodeInfo.setNodeContent(``);
         }
-       
+
         if (isEmpty(nodeInfo.getconnectId()) ||
             isEmpty(nodeInfo.getconnectEPoint()) ||
             isEmpty(nodeInfo.getconnectSPoint())) {
@@ -656,13 +650,14 @@ class MarkdownNode {
             console.log(`当前节点ID为${this.nodeID},连接ID为${this.connectId}`);
             this.connectStartPoint = nodeInfo.getconnectSPoint();
             this.connectEndPoint = nodeInfo.getconnectEPoint();
-            this.isConnect=true;
+            this.isConnect = true;
         }
         this.nodePosX = nodeInfo.nodePosX;
         this.nodePosY = nodeInfo.nodePosY;
-        this.nodeContent=nodeInfo.getNodeContent();
+        this.nodeContent = nodeInfo.getNodeContent();
         this.render();
         this.bind();
+        
     }
     render() {
 
@@ -670,64 +665,65 @@ class MarkdownNode {
         let $nodeHeader = create$(`header`);
         let $nodeHeaderp = create$(`input`);
         set$($nodeHeaderp, `placeholder`, this.nodeName, '');
-        $nodeHeaderp.oninput=()=>{
+        $nodeHeaderp.oninput = () => {
             this.nodeHeaderEvent();
         }
-        let $nodeHCloseBtn=create$(`p`,[`iconfont`,`icon-close`,`closeBtn`]);
+        let $nodeHCloseBtn = create$(`p`, [`iconfont`, `icon-close`, `closeBtn`]);
 
         let $nodemain = create$(`main`);
         let $nodemainitem = create$(`div`, `item`);
-        // //下拉框
-        // let $nodeContent = create$(`select`, `nodeContent`);
-        // let $nodeContentOption1 = create$(`option`);
-        // set$($nodeContentOption1, `value`, `bolid`, `加粗`);
-        // let $nodeContentOption2 = create$(`option`);
-        // $nodeContentOption2.setAttribute(`value`, `italic`);
-        // set$($nodeContentOption2, `value`, `italic`, `斜体`);
-        // let $nodeContentOption3 = create$(`option`);
-        // set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
-        // let $nodeContentOption4 = create$(`option`);
-        // set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
-        // //节点输入框
-        // let $nodeInput = create$(`input`);
-        // set$($nodeInput, `type`, `text`, '');
-       
         //节点尾部
         let $nodefooter = create$(`footer`);
         let $nodebtn = create$(`button`);
-        set$($nodebtn, ``, ``, '新增节点内容');  
-        this.$node=$node; 
+        set$($nodebtn, ``, ``, '新增节点内容');
+        this.$node = $node;
         this.$nodebtn = $nodebtn;
-        this.$nodeHeaderp=$nodeHeaderp; 
-        this.$nodeCloseBtn=$nodeHCloseBtn;  
+        this.$nodeHeaderp = $nodeHeaderp;
+        this.$nodeCloseBtn = $nodeHCloseBtn;
         $nodefooter.appendChild($nodebtn);
-        // $nodeContent.appendChild($nodeContentOption1);
-        // $nodeContent.appendChild($nodeContentOption2);
-        // $nodeContent.appendChild($nodeContentOption3);
-        // $nodeContent.appendChild($nodeContentOption4);
-        // $nodemainitem.appendChild($nodeContent);
-        //$nodemainitem.appendChild($nodeInput);
         $nodemain.appendChild($nodemainitem);
         $nodeHeader.appendChild($nodeHeaderp);
         $nodeHeader.appendChild($nodeHCloseBtn);
         $node.appendChild($nodeHeader);
         $node.appendChild($nodemain);
         $node.appendChild($nodefooter);
-        
+
         this.$nodemainitem = $nodemainitem;
+
        
-        console.log();
-        if(this.nodeContent!=``)
-        {
-            this.nodeContent.split(/\*+|~+|<br>/).forEach(index=>{
-                if(index!=``)
-                {
-                    this.nodeAddInput(index);
-                }
-            })
+        if (this.nodeContent != ``) {
+            console.log(this.nodeContent.split(/<br>/));
+            this.nodeContent.split(/<br>/).forEach(index=>{
+                 if(index!=``)
+                 {
+                    switch(true)
+                    {
+                        case((/~~/.test(index))):{
+                            this.nodeAddInput(index.replace(/\*+|~+|<br>/g,``),`deleteline`);
+                        };break;
+                        case((/^\*{3}}/.test(index))):{
+                            console.log(`斜粗体`);
+                            this.nodeAddInput(index.replace(/\*+|~+|<br>/g,``),`italicbolid`);
+                        };break;
+                        case((/^\*{2}/.test(index))):{
+                            console.log(`粗体`);
+                            this.nodeAddInput(index.replace(/\*+|~+|<br>/g,``),`bolid`);
+                        };break;
+                        case((/^\*{1}/).test(index)):{
+                            console.log(`斜体`);
+                            this.nodeAddInput(index.replace(/\*+|~+|<br>/g,``),`italic`);
+                        };break;
+                       
+                    }
+                 }
+            });
+            // this.nodeContent.split(/\*+|~+|<br>/).forEach(index => {
+            //     if (index != ``) {
+            //         this.nodeAddInput(index);
+            //     }
+            // })
         }
-        else
-        {
+        else {
             this.nodeAddInput(``);
         }
         this.$nodeDrawing.appendChild($node);
@@ -798,193 +794,168 @@ class MarkdownNode {
                 jsPlumb.draggable($node.id, { containment: self.$nodeDrawing.id });
             });
         }
-       
-    };
-    // nodeConnect(){
-    //     self=this;
-    //     console.log()
-    //     if (this.isConnect) {
-    //         jsPlumb.ready(function () {
-    //             console.log(self.nodeID);
-    //             jsPlumb.connect({
-    //                 source: self.nodeID,
-    //                 target: this.connectId,
-    //                 endpoint: 'Rectangle',
-    //                 connector: ['Bezier'],
-    //                 anchor: [this.connectStartPoint, this.connectEndPoint]
-    //             })
 
-    //         });
-    //     }
-    // };
+    };
     bind() {
-        self=this;
+        self = this;
         //节点添加内容
         this.$nodebtn.onclick = () => {
-           
+
             this.nodeAddInput();
         }
         //删除节点
-        this.$nodeCloseBtn.onclick=()=>{
+        this.$nodeCloseBtn.onclick = () => {
 
-            delete nodesInfos[nodesInfos.map(index=>{return index.getNodeId()}).indexOf(this.nodeID)];
+            delete nodesInfos[nodesInfos.map(index => { return index.getNodeId() }).indexOf(this.nodeID)];
             jsPlumb.remove(this.nodeID);
-            
+
         }
     };
     //节点头部输入框事件
-    nodeHeaderEvent(){
-         if(this.$nodeHeaderp.value!=null)
-         {
-            this.nodeName=this.$nodeHeaderp.value;
+    nodeHeaderEvent() {
+        if (this.$nodeHeaderp.value != null) {
+            this.nodeName = this.$nodeHeaderp.value;
             this.nodeInfo.setNodeName(this.nodeName);
-         }
+        }
     };
     //添加输入框
-    nodeAddInput(contentStr)
-    {
-          if(isEmpty(contentStr))
-          {
-            contentStr=``;
-          }
-          //下拉框
-          let $nodeContent = create$(`select`, `nodeContent`);
-          let $nodeContentOption1 = create$(`option`);
-          set$($nodeContentOption1, `value`, `bolid`, `加粗`);
-          let $nodeContentOption2 = create$(`option`);
-          $nodeContentOption2.setAttribute(`value`, `italic`);
-          set$($nodeContentOption2, `value`, `italic`, `斜体`);
-          let $nodeContentOption3 = create$(`option`);
-          set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
-          let $nodeContentOption4 = create$(`option`);
-          set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
-          //节点输入框
-          let $nodeInput = create$(`input`);
-          set$($nodeInput, `type`, `text`, '');
+    nodeAddInput(contentStr,contentType) {
+        if (isEmpty(contentStr)) {
+            contentStr = ``;
+        }
+        if(isEmpty(contentType))
+        {
+            contentType=`bolid`;
+        }
+        //下拉框
+        let $nodeContent = create$(`select`, `nodeContent`);
+        let $nodeContentOption1 = create$(`option`);
+        set$($nodeContentOption1, `value`, `bolid`, `加粗`);
+        let $nodeContentOption2 = create$(`option`);
+        $nodeContentOption2.setAttribute(`value`, `italic`);
+        set$($nodeContentOption2, `value`, `italic`, `斜体`);
+        let $nodeContentOption3 = create$(`option`);
+        set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
+        let $nodeContentOption4 = create$(`option`);
+        set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
+        //节点输入框
+        let $nodeInput = create$(`input`);
+        set$($nodeInput, `type`, `text`, '');
 
-          $nodeContent.appendChild($nodeContentOption1);
-          $nodeContent.appendChild($nodeContentOption2);
-          $nodeContent.appendChild($nodeContentOption3);
-          $nodeContent.appendChild($nodeContentOption4);
-          $nodeInput.value=contentStr;
-          
-          // $nodeInput.oninput=()=>{
-          //     this.nodeInputEvent();
-          // };
-          this.$nodemainitem.appendChild($nodeContent);
-          this.$nodemainitem.appendChild($nodeInput);
+        $nodeContent.appendChild($nodeContentOption1);
+        $nodeContent.appendChild($nodeContentOption2);
+        $nodeContent.appendChild($nodeContentOption3);
+        $nodeContent.appendChild($nodeContentOption4);
+        $nodeInput.value = contentStr;
+        $nodeContent.value=contentType;
+        console.log(contentType);
+        // $nodeInput.oninput=()=>{
+        //     this.nodeInputEvent();
+        // };
+        this.$nodemainitem.appendChild($nodeContent);
+        this.$nodemainitem.appendChild($nodeInput);
     };
-  
+
 }
 
 //节点绘制板块
 const NodeDrawing = {
     init() {
         this.$nodeDrawing = $(`.sliderbarContent.node .nodeDrawing`);
-        this.$savepointBtn=$(`.sliderbarContent.node .buttons button.save`);
+        this.$savepointBtn = $(`.sliderbarContent.node .buttons button.save`);
         this.$addFPpointBtn = $(`.sliderbarContent.node .buttons button.addFPpoint`);
         this.$addSppointBtn = $(`.sliderbarContent.node .buttons button.addSPpoint`);
         this.markdown = localStorage.markdown || TPL;//检测是否存在localStorage.markdown，如果有则传入localStorage.markdown内容，否则传入初始语句
-        // new MarkdownNode(`节点3`, `node3`, this.$nodeDrawing, `father`);
-        // new MarkdownNode(`节点4`, `node4`, this.$nodeDrawing, `son`);
-       
-       nodesInfos=convertToNode(this.markdown);
-       // this.nodes=nodesInfos;
-        let markdownNodes=new Array().fill(``);
-        for(let index=0;index<nodesInfos.length;index++)
-        {
-            markdownNodes[index]=new MarkdownNode(nodesInfos[index] , this.$nodeDrawing);
+        nodesInfos = convertToNode(this.markdown);
+        // this.nodes=nodesInfos;
+        let markdownNodes = new Array().fill(``);
+        for (let index = 0; index < nodesInfos.length; index++) {
+            markdownNodes[index] = new MarkdownNode(nodesInfos[index], this.$nodeDrawing);
         };
-        markdownNodes.forEach(index=>{
+        markdownNodes.forEach(index => {
             nodeConnect(index);
         });
+        //读取JSON字符串
         readNodeInfoJSON();
+        //默认节点名
         this.defalutNodeName = `节点`;
         this.bind();
     },
     bind() {
-        self=this;
+        self = this;
         //添加父按钮
         this.$addFPpointBtn.onclick = () => {
-            let nodeinfo=new NodeInfo();
+            let nodeinfo = new NodeInfo();
             nodeinfo.setNodeName(this.defalutNodeName + nodeindex);
             nodeinfo.setNodeId(defalutNodeId + nodeindex);
             nodeinfo.setNodeType(`father`);
             nodesInfos.push(nodeinfo);
-            new MarkdownNode(nodeinfo , this.$nodeDrawing)
+            new MarkdownNode(nodeinfo, this.$nodeDrawing)
             //this.markdown+=`\n### ${nodeinfo.getNodeName().trim()}`;
-            
+
             nodeindex++;
         }
         //添加子按钮
         this.$addSppointBtn.onclick = () => {
-            let nodeinfo=new NodeInfo();
+            let nodeinfo = new NodeInfo();
             nodeinfo.setNodeName(this.defalutNodeName + nodeindex);
             nodeinfo.setNodeId(defalutNodeId + nodeindex);
             nodeinfo.setNodeType(`son`);
             nodesInfos.push(nodeinfo);
-            new MarkdownNode(nodeinfo , this.$nodeDrawing);
+            new MarkdownNode(nodeinfo, this.$nodeDrawing);
             //this.markdown+=`\n## ${nodeinfo.getNodeName().trim()}`;
 
             nodeindex++;
         }
-        this.$savepointBtn.onclick=()=>{
-            nodesJSONStr="";
-            this.markdown="";
-           // let $$nodeContents=in$$(this.$node,`.nodeContent`);
-            nodesInfos.forEach(index=>{
-               let node=document.getElementById(index.getNodeId());
-               let nodecontent=``;
-               let nodecontenttypes=in$$(node,`.nodeContent`);
-               let nodecontentItems=in$$(node,`.item input`);
-               for(let index=0;index<nodecontentItems.length;index++)
-               {
-                  switch(nodecontenttypes[index].value)
-                  {
-                    case `bolid`:{
-                        if(!isEmpty(nodecontentItems[index].value))
-                        {
-                            nodecontent+=`\n**${nodecontentItems[index].value}**<br>`;
-                        }                      
-                    };break;
-                    case `italic`:{
-                        if(!isEmpty(nodecontentItems[index].value))
-                        {
-                            nodecontent+=`\n*${nodecontentItems[index].value}*<br>`;
-                        }
-                    };break;
-                    case `italicbolid`:{
-                        if(!isEmpty(nodecontentItems[index].value))
-                        {
-                            nodecontent+=`\n***${nodecontentItems[index].value}***<br>`;
-                        }
-                     
-                    };break;
-                    case `deleteline`:{
-                        if(!isEmpty(nodecontentItems[index].value))
-                        {
-                            nodecontent+=`\n~~${nodecontentItems[index].value}~~<br>`;
-                        } 
-                    };break;
-                  }
-               }
-               //in$(node,`.item input`).value
-               index.setNodeX(node.style.left);
-               index.setNodeY(node.style.top);
-               index.setNodeContent(nodecontent);
-              
-               writeNodeInfoJSON(index);
-               if(index.getNodeType()!=`father`)
-               {
-                   this.markdown+=`\n### ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
-               }
-               else
-               {
-                   this.markdown+=`\n## ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
-               }
+        this.$savepointBtn.onclick = () => {
+            nodesJSONStr = "";
+            this.markdown = "";
+            // let $$nodeContents=in$$(this.$node,`.nodeContent`);
+            nodesInfos.forEach(index => {
+                let node = document.getElementById(index.getNodeId());
+                let nodecontent = ``;
+                let nodecontenttypes = in$$(node, `.nodeContent`);
+                let nodecontentItems = in$$(node, `.item input`);
+                for (let index = 0; index < nodecontentItems.length; index++) {
+                    switch (nodecontenttypes[index].value) {
+                        case `bolid`: {
+                            if (!isEmpty(nodecontentItems[index].value)) {
+                                nodecontent += `\n**${nodecontentItems[index].value}**<br>`;
+                            }
+                        }; break;
+                        case `italic`: {
+                            if (!isEmpty(nodecontentItems[index].value)) {
+                                nodecontent += `\n*${nodecontentItems[index].value}*<br>`;
+                            }
+                        }; break;
+                        case `italicbolid`: {
+                            if (!isEmpty(nodecontentItems[index].value)) {
+                                nodecontent += `\n***${nodecontentItems[index].value}***<br>`;
+                            }
+
+                        }; break;
+                        case `deleteline`: {
+                            if (!isEmpty(nodecontentItems[index].value)) {
+                                nodecontent += `\n~~${nodecontentItems[index].value}~~<br>`;
+                            }
+                        }; break;
+                    }
+                }
+                //in$(node,`.item input`).value
+                index.setNodeX(node.style.left);
+                index.setNodeY(node.style.top);
+                index.setNodeContent(nodecontent);
+
+                writeNodeInfoJSON(index);
+                if (index.getNodeType() != `father`) {
+                    this.markdown += `\n### ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
+                }
+                else {
+                    this.markdown += `\n## ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
+                }
             })
             console.log(JSON.parse(localStorage.nodesInfo));
-            localStorage.markdown=this.markdown;
+            localStorage.markdown = this.markdown;
             location.reload();
         }
     }
@@ -1002,7 +973,7 @@ const Print = {
             console.log("下载按钮触发");
             let $link = document.createElement(`a`);
             $link.setAttribute(`target`, `_blank`);
-            $link.setAttribute(`href`, location.href.replace(/#\/.+/, ``) + `?print-pdf`);      
+            $link.setAttribute(`href`, location.href.replace(/#\/.+/, ``) + `?print-pdf`);
             $link.click();
         })
         window.onafterprint = () => window.close();
@@ -1028,4 +999,4 @@ const App = {
         [...arguments].forEach(Modlue => Modlue.init());
     }
 }
-App.init(Sliderbar, Print, Theme, Editor, NodeDrawing);
+App.init(Sliderbar, Print, Theme,Editor, NodeDrawing);
