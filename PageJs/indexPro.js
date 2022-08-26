@@ -42,6 +42,7 @@ const set$ = (element, attributeName, attributeValue, text) => {
             }; break;
     }
 };
+//配置节点连接信息
 const setNodeConnect = node => {
     node.setconnectId(defalutNodeId + (nodeindex + 1));
     node.setconnectSPoint(`Right`);
@@ -52,6 +53,9 @@ const in$$ = (f, s) => f.querySelectorAll(s);
 const isMain = str => (/^#{1,2}(?!#)/).test(str);
 const isSub = str => (/^#{3}(?!#)/).test(str);
 const isEmpty = str => (str == null || str == ``);
+//node show jtk-endpoint-anchor jtk-draggable jtk-connected 元素连接之后的class
+//node show jtk-endpoint-anchor jtk-draggable 元素未连接的class
+//节点连接
 function nodeConnect(nodeinfo) {
     if (nodeinfo.isConnect) {
         jsPlumb.ready(function () {
@@ -209,7 +213,7 @@ function convert(raw) {
 
 class NodeInfo {
     constructor() {
-
+        
     }
     setNodeName(nodeName) {
         this.nodeName = nodeName;
@@ -265,7 +269,77 @@ class NodeInfo {
     getconnectEPoint() {
         return this.connectEPoint;
     }
+  
+    // setsonid(sonid)
+    // {
+    //     this.sonid=sonid;
+    // }
+    // getsonid()
+    // {
+    //   return this.sonid;
+    // }
+    // setbortherid(bortherid)
+    // {
+    //   this.bortherid=bortherid;
+    // }
+    // getbortherid()
+    // {
+    //    return this.getbortherid;
+    // }
+    // setfatherid(fatherid)
+    // {
+    //     this.fatherid=fatherid;
+    // }
+    // getfatherid()
+    // {
+    //    return this.fatherid;
+    // }
+  
 }
+class NodeItem{
+   constructor(nodeinfo)
+   {
+     this.itemValue=nodeinfo;
+     this.nextnode=null;
+   }
+
+}
+class NodeItemList{
+    constructor()
+    {
+        this.head=new NodeItem();
+    }
+    find(nodeitemID)
+    {
+        let currentNode=this.head;
+        while(currentNode!=null&&currentNode.nodeinfo.getNodeId()!=nodeitemID)
+        {
+            currentNode=currentNode.nextnode;
+        }
+        return currentNode;
+    }
+    retLast()
+    {
+        let currentNode=this.head;
+        while(currentNode.nextnode!=null)
+        {
+            currentNode=currentNode.nextnode;
+        }
+        return currentNode;
+    }
+    insert(nodeinfo,nodeitemID)
+    {
+        const newNode=new NodeItem(nodeinfo);
+        
+    }
+    Add(nodeinfo)
+    {
+       const newNode=new NodeItem(nodeinfo);
+       this.retLast().nextnode=newNode;
+    }
+    
+}
+//markdown转节点
 function convertToNode(raw) {
     let arr = raw.split(/\n(?=\s*#)/).filter(s => s != "").map(s => s.trim());
 
@@ -540,7 +614,7 @@ const Theme = {
         this.$reveal.classList.add(this.$align.value);
     }
 }
-//编辑器(废弃功能)
+//编辑器
 const Editor = {
     init() {
         console.log(`编译器初始化`);
@@ -907,6 +981,7 @@ const NodeDrawing = {
 
             nodeindex++;
         }
+        //保存按钮
         this.$savepointBtn.onclick = () => {
             nodesJSONStr = "";
             this.markdown = "";
