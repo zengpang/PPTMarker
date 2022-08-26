@@ -53,9 +53,7 @@ const isMain = str => (/^#{1,2}(?!#)/).test(str);
 const isSub = str => (/^#{3}(?!#)/).test(str);
 const isEmpty = str => (str == null || str == ``);
 function nodeConnect(nodeinfo)
-{
-     
-       
+{   
         if (nodeinfo.isConnect) {
             jsPlumb.ready(function () {
                 console.log(nodeinfo.nodeID);
@@ -77,6 +75,7 @@ function nodeConnect(nodeinfo)
         }
   
 }
+//写入JSON格式的节点位置数据
 function writeNodeInfoJSON(nodeinfo) {
    
     this.nodeId = nodeinfo.getNodeId();
@@ -107,6 +106,7 @@ function writeNodeInfoJSON(nodeinfo) {
     localStorage.nodesInfo = `[${nodesJSONStr}]`;
 
 }
+//读取JSON格式的节点位置数据
 function readNodeInfoJSON() {
     if(isEmpty(localStorage.nodesInfo))
     {
@@ -117,8 +117,12 @@ function readNodeInfoJSON() {
     console.log(nodesPosInfo);
     nodesPosInfo.forEach(index=>{
         let nodeElement=document.getElementById(index.nodeId);
-        nodeElement.style.left=index.nodePosX;
-        nodeElement.style.top=index.nodePosY;
+        if(nodeElement!=null)
+        {
+            nodeElement.style.left=index.nodePosX;
+            nodeElement.style.top=index.nodePosY;
+        }
+
     })
 }
 function convert(raw) {
@@ -204,7 +208,8 @@ function convert(raw) {
         }
     }
     return html;
-}
+};
+
 class NodeInfo {
     constructor() {
 
@@ -574,6 +579,10 @@ const Editor = {
             // Learn about plugins: https://revealjs.com/plugins/
             plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
         });
+    },
+    update()
+    {
+        this.$editInput.value = this.markdown;
     }
 }
 //节点模板
@@ -624,7 +633,8 @@ class MarkdownNode {
         this.$nodeDrawing = $nodeDrawing;
         this.nodeType = nodeInfo.getNodeType();
         this.isConnect = true;
-        this.nodes=nodesInfos;
+        this.nodeInfo=nodeInfo;
+       
         if (isEmpty(nodeInfo.getNodeX())) {
             nodeInfo.setNodeX(nodeDPosX);
         }
@@ -635,17 +645,7 @@ class MarkdownNode {
         {
             nodeInfo.setNodeContent(``);
         }
-        // if (nodeInfo.getNodeX() == null || nodeInfo.getNodeX() == ``) {
-        //     nodeInfo.setNodeX(nodeDPosX);
-        // }
-        // if (nodeInfo.getNodeY() == null || nodeInfo.getNodeY() == ``) {
-        //     nodeInfo.setNodeY(nodeDposY);
-        // }
-        // if(nodeInfo.getNodeId()==null||nodeInfo.getNodeId()==``||
-        //    nodeInfo.getconnectSPoint()==null||nodeInfo.getconnectSPoint()==``)
-        // {
-
-        // }
+       
         if (isEmpty(nodeInfo.getconnectId()) ||
             isEmpty(nodeInfo.getconnectEPoint()) ||
             isEmpty(nodeInfo.getconnectSPoint())) {
@@ -670,46 +670,66 @@ class MarkdownNode {
         let $nodeHeader = create$(`header`);
         let $nodeHeaderp = create$(`input`);
         set$($nodeHeaderp, `placeholder`, this.nodeName, '');
+        $nodeHeaderp.oninput=()=>{
+            this.nodeHeaderEvent();
+        }
         let $nodeHCloseBtn=create$(`p`,[`iconfont`,`icon-close`,`closeBtn`]);
 
         let $nodemain = create$(`main`);
         let $nodemainitem = create$(`div`, `item`);
-        //下拉框
-        let $nodeContent = create$(`select`, `nodeContent`);
-        let $nodeContentOption1 = create$(`option`);
-        set$($nodeContentOption1, `value`, `bolid`, `加粗`);
-        let $nodeContentOption2 = create$(`option`);
-        $nodeContentOption2.setAttribute(`value`, `italic`);
-        set$($nodeContentOption2, `value`, `italic`, `斜体`);
-        let $nodeContentOption3 = create$(`option`);
-        set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
-        let $nodeContentOption4 = create$(`option`);
-        set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
-        //节点输入框
-        let $nodeInput = create$(`input`);
-        set$($nodeInput, `type`, `text`, '');
+        // //下拉框
+        // let $nodeContent = create$(`select`, `nodeContent`);
+        // let $nodeContentOption1 = create$(`option`);
+        // set$($nodeContentOption1, `value`, `bolid`, `加粗`);
+        // let $nodeContentOption2 = create$(`option`);
+        // $nodeContentOption2.setAttribute(`value`, `italic`);
+        // set$($nodeContentOption2, `value`, `italic`, `斜体`);
+        // let $nodeContentOption3 = create$(`option`);
+        // set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
+        // let $nodeContentOption4 = create$(`option`);
+        // set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
+        // //节点输入框
+        // let $nodeInput = create$(`input`);
+        // set$($nodeInput, `type`, `text`, '');
+       
         //节点尾部
         let $nodefooter = create$(`footer`);
         let $nodebtn = create$(`button`);
-        set$($nodebtn, ``, ``, '新增节点内容');   
-        this.$nodebtn = $nodebtn; 
+        set$($nodebtn, ``, ``, '新增节点内容');  
+        this.$node=$node; 
+        this.$nodebtn = $nodebtn;
+        this.$nodeHeaderp=$nodeHeaderp; 
         this.$nodeCloseBtn=$nodeHCloseBtn;  
         $nodefooter.appendChild($nodebtn);
-        $nodeContent.appendChild($nodeContentOption1);
-        $nodeContent.appendChild($nodeContentOption2);
-        $nodeContent.appendChild($nodeContentOption3);
-        $nodeContent.appendChild($nodeContentOption4);
-        $nodemainitem.appendChild($nodeContent);
-        $nodemainitem.appendChild($nodeInput);
+        // $nodeContent.appendChild($nodeContentOption1);
+        // $nodeContent.appendChild($nodeContentOption2);
+        // $nodeContent.appendChild($nodeContentOption3);
+        // $nodeContent.appendChild($nodeContentOption4);
+        // $nodemainitem.appendChild($nodeContent);
+        //$nodemainitem.appendChild($nodeInput);
         $nodemain.appendChild($nodemainitem);
         $nodeHeader.appendChild($nodeHeaderp);
         $nodeHeader.appendChild($nodeHCloseBtn);
         $node.appendChild($nodeHeader);
         $node.appendChild($nodemain);
         $node.appendChild($nodefooter);
-
+        
         this.$nodemainitem = $nodemainitem;
-        $nodeInput.value=this.nodeContent;
+       
+        console.log();
+        if(this.nodeContent!=``)
+        {
+            this.nodeContent.split(/\*+|~+|<br>/).forEach(index=>{
+                if(index!=``)
+                {
+                    this.nodeAddInput(index);
+                }
+            })
+        }
+        else
+        {
+            this.nodeAddInput(``);
+        }
         this.$nodeDrawing.appendChild($node);
         $node.style.left = this.nodePosX;
         $node.style.top = this.nodePosY;
@@ -798,31 +818,13 @@ class MarkdownNode {
     //     }
     // };
     bind() {
+        self=this;
+        //节点添加内容
         this.$nodebtn.onclick = () => {
-            //下拉框
-            let $nodeContent = create$(`select`, `nodeContent`);
-            let $nodeContentOption1 = create$(`option`);
-            set$($nodeContentOption1, `value`, `bolid`, `加粗`);
-            let $nodeContentOption2 = create$(`option`);
-            $nodeContentOption2.setAttribute(`value`, `italic`);
-            set$($nodeContentOption2, `value`, `italic`, `斜体`);
-            let $nodeContentOption3 = create$(`option`);
-            set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
-            let $nodeContentOption4 = create$(`option`);
-            set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
-            //节点输入框
-            let $nodeInput = create$(`input`);
-            set$($nodeInput, `type`, `text`, '');
-
-            $nodeContent.appendChild($nodeContentOption1);
-            $nodeContent.appendChild($nodeContentOption2);
-            $nodeContent.appendChild($nodeContentOption3);
-            $nodeContent.appendChild($nodeContentOption4);
-
-            this.$nodemainitem.appendChild($nodeContent);
-            this.$nodemainitem.appendChild($nodeInput);
-
+           
+            this.nodeAddInput();
         }
+        //删除节点
         this.$nodeCloseBtn.onclick=()=>{
 
             delete nodesInfos[nodesInfos.map(index=>{return index.getNodeId()}).indexOf(this.nodeID)];
@@ -830,6 +832,49 @@ class MarkdownNode {
             
         }
     };
+    //节点头部输入框事件
+    nodeHeaderEvent(){
+         if(this.$nodeHeaderp.value!=null)
+         {
+            this.nodeName=this.$nodeHeaderp.value;
+            this.nodeInfo.setNodeName(this.nodeName);
+         }
+    };
+    //添加输入框
+    nodeAddInput(contentStr)
+    {
+          if(isEmpty(contentStr))
+          {
+            contentStr=``;
+          }
+          //下拉框
+          let $nodeContent = create$(`select`, `nodeContent`);
+          let $nodeContentOption1 = create$(`option`);
+          set$($nodeContentOption1, `value`, `bolid`, `加粗`);
+          let $nodeContentOption2 = create$(`option`);
+          $nodeContentOption2.setAttribute(`value`, `italic`);
+          set$($nodeContentOption2, `value`, `italic`, `斜体`);
+          let $nodeContentOption3 = create$(`option`);
+          set$($nodeContentOption3, `value`, `italicbolid`, `斜体加粗`);
+          let $nodeContentOption4 = create$(`option`);
+          set$($nodeContentOption4, `value`, `deleteline`, `删除线`);
+          //节点输入框
+          let $nodeInput = create$(`input`);
+          set$($nodeInput, `type`, `text`, '');
+
+          $nodeContent.appendChild($nodeContentOption1);
+          $nodeContent.appendChild($nodeContentOption2);
+          $nodeContent.appendChild($nodeContentOption3);
+          $nodeContent.appendChild($nodeContentOption4);
+          $nodeInput.value=contentStr;
+          
+          // $nodeInput.oninput=()=>{
+          //     this.nodeInputEvent();
+          // };
+          this.$nodemainitem.appendChild($nodeContent);
+          this.$nodemainitem.appendChild($nodeInput);
+    };
+  
 }
 
 //节点绘制板块
@@ -843,7 +888,7 @@ const NodeDrawing = {
         // new MarkdownNode(`节点3`, `node3`, this.$nodeDrawing, `father`);
         // new MarkdownNode(`节点4`, `node4`, this.$nodeDrawing, `son`);
        
-        nodesInfos=convertToNode(this.markdown);
+       nodesInfos=convertToNode(this.markdown);
        // this.nodes=nodesInfos;
         let markdownNodes=new Array().fill(``);
         for(let index=0;index<nodesInfos.length;index++)
@@ -866,8 +911,9 @@ const NodeDrawing = {
             nodeinfo.setNodeId(defalutNodeId + nodeindex);
             nodeinfo.setNodeType(`father`);
             nodesInfos.push(nodeinfo);
-            
             new MarkdownNode(nodeinfo , this.$nodeDrawing)
+            //this.markdown+=`\n### ${nodeinfo.getNodeName().trim()}`;
+            
             nodeindex++;
         }
         //添加子按钮
@@ -878,14 +924,51 @@ const NodeDrawing = {
             nodeinfo.setNodeType(`son`);
             nodesInfos.push(nodeinfo);
             new MarkdownNode(nodeinfo , this.$nodeDrawing);
+            //this.markdown+=`\n## ${nodeinfo.getNodeName().trim()}`;
+
             nodeindex++;
         }
         this.$savepointBtn.onclick=()=>{
             nodesJSONStr="";
             this.markdown="";
+           // let $$nodeContents=in$$(this.$node,`.nodeContent`);
             nodesInfos.forEach(index=>{
                let node=document.getElementById(index.getNodeId());
-               let nodecontent=in$(node,`.item input`).value;
+               let nodecontent=``;
+               let nodecontenttypes=in$$(node,`.nodeContent`);
+               let nodecontentItems=in$$(node,`.item input`);
+               for(let index=0;index<nodecontentItems.length;index++)
+               {
+                  switch(nodecontenttypes[index].value)
+                  {
+                    case `bolid`:{
+                        if(!isEmpty(nodecontentItems[index].value))
+                        {
+                            nodecontent+=`\n**${nodecontentItems[index].value}**<br>`;
+                        }                      
+                    };break;
+                    case `italic`:{
+                        if(!isEmpty(nodecontentItems[index].value))
+                        {
+                            nodecontent+=`\n*${nodecontentItems[index].value}*<br>`;
+                        }
+                    };break;
+                    case `italicbolid`:{
+                        if(!isEmpty(nodecontentItems[index].value))
+                        {
+                            nodecontent+=`\n***${nodecontentItems[index].value}***<br>`;
+                        }
+                     
+                    };break;
+                    case `deleteline`:{
+                        if(!isEmpty(nodecontentItems[index].value))
+                        {
+                            nodecontent+=`\n~~${nodecontentItems[index].value}~~<br>`;
+                        } 
+                    };break;
+                  }
+               }
+               //in$(node,`.item input`).value
                index.setNodeX(node.style.left);
                index.setNodeY(node.style.top);
                index.setNodeContent(nodecontent);
@@ -919,10 +1002,7 @@ const Print = {
             console.log("下载按钮触发");
             let $link = document.createElement(`a`);
             $link.setAttribute(`target`, `_blank`);
-            //  $link.setAttribute(`href`, location.href.replace(/#\/.+/, `?print-pdf`));
-            // $link.setAttribute(`href`, location.href + `?print-pdf`);
-            $link.setAttribute(`href`, location.href.replace(/#\/.+/, ``) + `?print-pdf`);
-           
+            $link.setAttribute(`href`, location.href.replace(/#\/.+/, ``) + `?print-pdf`);      
             $link.click();
         })
         window.onafterprint = () => window.close();
