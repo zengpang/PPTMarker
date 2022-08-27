@@ -51,23 +51,23 @@ const set$ = (element, attributeName, attributeValue, text) => {
 //     node.setconnectEPoint(`Left`);
 // };
 //配置连接父节点信息
-const setNodeFConnect = (node,nodeid) => {
+const setNodeFConnect = (node, nodeid) => {
     node.setRightCid(nodeid);
-   // node.setRightCid(defalutNodeId + (nodeindex + 1));
-    
+    // node.setRightCid(defalutNodeId + (nodeindex + 1));
+
     // node.setconnectSPoint(`Right`);
     node.setcREPoint(`Left`);
-  
-   
+
+
 };
 //配置子节点连接父节点
-const setNodeSFConnect=(node,nodeid)=>{
+const setNodeSFConnect = (node, nodeid) => {
     node.setfatherid(nodeid);
     // node.setconnectSPoint(`Top`);
     node.setcTEPoint(`Bottom`);
 }
 //配置连接子节点信息
-const setNodeSConnect = (node,nodeid) => {
+const setNodeSConnect = (node, nodeid) => {
     node.setsonid(nodeid);
     // node.setconnectSPoint(`Bottom`);
     node.setcBEPoint(`Top`);
@@ -84,18 +84,69 @@ const in$ = (f, s) => f.querySelector(s);
 const in$$ = (f, s) => f.querySelectorAll(s);
 const isMain = str => (/^#{1,2}(?!#)/).test(str);
 const isSub = str => (/^#{3}(?!#)/).test(str);
-const isEmpty = str => (str == null || str == ``);
+const isEmpty = str => (str == null || str == ``||str===`undefined`);
 //node show jtk-endpoint-anchor jtk-draggable jtk-connected 元素连接之后的class
 //node show jtk-endpoint-anchor jtk-draggable 元素未连接的class
+const isChange = (node1, node2) => {
+    let b = 0;
+    b = node1;
+    node1 = node2;
+    node2 = b;
+}
+function connectEvent(conn) {
+
+    if (!isEmpty(nodesInfos)) {
+      
+        let souceItem = nodesInfos.find(index => index.getNodeId() == conn.source.id);
+        let targetid=conn.target.id;
+        // let targetItem = nodesInfos.find(index => index.getNodeId() == conn.target.id);
+         let souceItemIndex=nodesInfos.indexOf(souceItem);
+        // let targetItemIndex=nodesInfos.indexOf(targetItem);
+        let tEndpoint=conn.targetEndpoint.anchor.type;
+        let sEndpoint=conn.sourceEndpoint.anchor.type;
+        console.log(nodesInfos[souceItemIndex]);
+        
+        switch (sEndpoint) {
+            case (`Bottom`): {
+                souceItem.setcBEPoint(tEndpoint);
+                souceItem.setsonid(targetid);
+                console.log(targetid);
+            }; break;
+            case (`Top`): {
+                souceItem.setcTEPoint(tEndpoint);
+                souceItem.setfatherid(targetid);
+                console.log(targetid);
+            }; break;
+            case (`Left`): {
+                souceItem.setcLEPoint(tEndpoint);
+                souceItem.setLeftCid(targetid);
+                console.log(targetid);
+            }; break;
+            case (`Right`): {
+                souceItem.setcREPoint(tEndpoint);
+                souceItem.setRightCid(targetid);
+                console.log(targetid);
+            }; break;
+        }
+        console.log(nodesInfos[souceItemIndex]);
+        // if(Math.abs(targetItemIndex-souceItemIndex)>1)
+        // {
+        //      isChange(nodesInfos[targetItemIndex],nodesInfos[(souceItemIndex+1>=nodesInfos.length?souceItemIndex-1:souceItemIndex)]);
+        //      console.log(`替换中`);
+        // }
+
+    }
+
+}
 //节点连接
-function nodeConnect(nodeinfo,connectID) {
-    if (!isEmpty(connectID)) {
+function nodeConnect(nodeinfo, connectStartPoint, connectEndPoint, connectID) {
+    if (!isEmpty(connectID) && !isEmpty(connectStartPoint) && !isEmpty(connectEndPoint)) {
         jsPlumb.ready(function () {
-       
+            console.log(`开始链结`+connectStartPoint+connectEndPoint);
             jsPlumb.connect({
                 source: nodeinfo.nodeID,
                 target: connectID,
-             
+
                 connector: ['Bezier'],
                 paintStyle: {     //#00a8ff父节点连接颜色
                     stroke: '#00a8ff',
@@ -103,11 +154,11 @@ function nodeConnect(nodeinfo,connectID) {
                     strokeWidth: 3
                 },
 
-                anchor: [nodeinfo.connectStartPoint, nodeinfo.connectEndPoint]
+                anchor: [connectStartPoint, connectEndPoint]
             })
-
+            console.log(`链结结束`);
         });
-       
+        
     }
 
 }
@@ -124,14 +175,14 @@ function writeNodeInfoJSON(nodeinfo) {
     }
     this.nodePosX = nodeinfo.getNodeX();
     this.nodePosY = nodeinfo.getNodeY();
-    this.nodeRightid=nodeinfo.getRightCid();
-    this.nodeLeftid=nodeinfo.getLeftCid();
-    this.nodeFid=nodeinfo.getfatherid();
-    this.nodeSid=nodeinfo.getsonid();
-    this.nodeCLEPoint=nodeinfo.getcLEPoint();
-    this.nodeCREPoint=nodeinfo.getcREPoint();
-    this.nodeCTEPoint=nodeinfo.getcTEPoint();
-    this.nodeCBEPoint=nodeinfo.getcBEPoint();
+    this.nodeRightid = nodeinfo.getRightCid();
+    this.nodeLeftid = nodeinfo.getLeftCid();
+    this.nodeFid = nodeinfo.getfatherid();
+    this.nodeSid = nodeinfo.getsonid();
+    this.nodeCLEPoint = nodeinfo.getcLEPoint();
+    this.nodeCREPoint = nodeinfo.getcREPoint();
+    this.nodeCTEPoint = nodeinfo.getcTEPoint();
+    this.nodeCBEPoint = nodeinfo.getcBEPoint();
     let nodesJSONItem = `{
         "nodeId":"${this.nodeId}",
         "nodePosX":"${this.nodePosX}",
@@ -148,7 +199,7 @@ function writeNodeInfoJSON(nodeinfo) {
     if (nodesJSONStr == ``) {
 
         nodesJSONItem = nodesJSONItem;
-   
+
     }
     else {
         nodesJSONItem = `,` + nodesJSONItem;
@@ -158,55 +209,85 @@ function writeNodeInfoJSON(nodeinfo) {
     localStorage.nodesInfo = `[${nodesJSONStr}]`;
 
 }
-function clearNodeInfoJSON()
-{
-    localStorage.nodesInfo=``;
+function clearNodeInfoJSON() {
+    localStorage.nodesInfo = ``;
 }
 //读取JSON格式的节点位置数据
 function readNodeInfoJSON() {
     if (isEmpty(localStorage.nodesInfo)) {
         return;
     }
-    
+
     let nodesPosInfo = JSON.parse(localStorage.nodesInfo);
-    
+    console.log(nodesPosInfo);
     nodesPosInfo.forEach(index => {
-        let nodeid=index.nodeId;
-        let nodeInfo= nodesInfos.find(index=>index.getNodeId()==nodeid);
-        switch(true)
-        {
-            case(isEmpty(nodeInfo.getLeftCid())&&!isEmpty(index.nodeLeftid)):{
-                nodeInfo.setLeftCid(index.nodeLeftid);
-            };
-            case(isEmpty(nodeInfo.getRightCid())&&!isEmpty(index.nodeRightid)):{
-                nodeInfo.setLeftCid(index.nodeRightid);
-            };
-            case(isEmpty(nodeInfo.getfatherid())&&!isEmpty(index.nodeFid)):{
-                nodeInfo.setfatherid(index.nodeFid);
-            };
-            case(isEmpty(nodeInfo.getsonid())&&!isEmpty(index.nodeSid)):{
-                nodeInfo.setfatherid(index.nodeSid);
-            }
+        let nodeid = index.nodeId;
+        let nodeInfo = nodesInfos.find(index => index.getNodeId() == nodeid);
 
-            case(isEmpty(nodeInfo.getcLEPoint())&&!isEmpty(index.nodeCLEPoint)):{
-                nodeInfo.setcLEPoint(index.nodeCLEPoint);
-            };
-            case(isEmpty(nodeInfo.getcREPoint())&&!isEmpty(index.nodeCREPoint)):{
-                nodeInfo.setLeftCid(index.nodeRightid);
-            };
-            case(isEmpty(nodeInfo.getfatherid())&&!isEmpty(index.nodeFid)):{
-                nodeInfo.setfatherid(index.nodeFid);
-            };
-            case(isEmpty(nodeInfo.getsonid())&&!isEmpty(index.nodeSid)):{
-                nodeInfo.setfatherid(index.nodeSid);
+        if (!isEmpty(nodeInfo)) {
+
+
+            switch (true) {
+                case (isEmpty(nodeInfo.getLeftCid()) && !isEmpty(index.nodeLeftid)): {
+                    nodeInfo.setLeftCid(index.nodeLeftid);
+                   
+                };
+                case (isEmpty(nodeInfo.getRightCid()) && !isEmpty(index.nodeRightid)): {
+                    nodeInfo.setLeftCid(index.nodeRightid);
+                };
+                case (isEmpty(nodeInfo.getfatherid()) && !isEmpty(index.nodeFid)): {
+                    nodeInfo.setfatherid(index.nodeFid);
+                };
+                case (isEmpty(nodeInfo.getsonid()) && !isEmpty(index.nodeSid)): {
+                    nodeInfo.setsonid(index.nodeSid);
+                }
+
+                case (isEmpty(nodeInfo.getcLEPoint()) && !isEmpty(index.nodeCLEPoint)): {
+                    nodeInfo.setcLEPoint(index.nodeCLEPoint);
+                    
+                };
+                case (isEmpty(nodeInfo.getcREPoint()) && !isEmpty(index.nodeCREPoint)): {
+                    nodeInfo.setcREPoint(index.nodeCREPoint);
+
+                };
+                case (isEmpty(nodeInfo.getcTEPoint()) && !isEmpty(index.nodeCTEPoint)): {
+                    nodeInfo.setcTEPoint(index.nodeCTEPoint);
+                };
+                case (isEmpty(nodeInfo.getcBEPoint()) && !isEmpty(index.nodeCBEPoint)): {
+                    nodeInfo.setcBEPoint(index.nodeCBEPoint);
+                };
+            }
+            
+            // let nodeElement = document.getElementById(index.nodeId);
+            // if (nodeElement != null) {
+            //     nodeElement.style.left = index.nodePosX;
+            //     nodeElement.style.top = index.nodePosY;
+            // }
+        }
+    })
+}
+function readNodePosInfoJSON()
+{
+    if (isEmpty(localStorage.nodesInfo)) {
+        return;
+    }
+
+    let nodesPosInfo = JSON.parse(localStorage.nodesInfo);
+    console.log(nodesPosInfo);
+    nodesPosInfo.forEach(index => {
+        let nodeid = index.nodeId;
+        let nodeInfo = nodesInfos.find(index => index.getNodeId() == nodeid);
+
+        if (!isEmpty(nodeInfo)) {
+
+
+       
+            let nodeElement = document.getElementById(index.nodeId);
+            if (nodeElement != null) {
+                nodeElement.style.left = index.nodePosX;
+                nodeElement.style.top = index.nodePosY;
             }
         }
-        let nodeElement = document.getElementById(index.nodeId);
-        if (nodeElement != null) {
-            nodeElement.style.left = index.nodePosX;
-            nodeElement.style.top = index.nodePosY;
-        }
-
     })
 }
 function convert(raw) {
@@ -351,28 +432,22 @@ class NodeInfo {
     getcLEPoint() {
         return this.cLEPoint;
     }
-    setcREPoint(cREPoint)
-    {
-        this.cREPoint=cREPoint;
+    setcREPoint(cREPoint) {
+        this.cREPoint = cREPoint;
     }
-    getcREPoint()
-    {
+    getcREPoint() {
         return this.cREPoint;
     }
-    setcTEPoint(cTEPoint)
-    {
-        this.cTEPoint=cTEPoint;
+    setcTEPoint(cTEPoint) {
+        this.cTEPoint = cTEPoint;
     }
-    getcTEPoint()
-    {
+    getcTEPoint() {
         return this.cTEPoint;
     }
-    setcBEPoint(cBEPoint)
-    {
-        this.cBEPoint=cBEPoint;
+    setcBEPoint(cBEPoint) {
+        this.cBEPoint = cBEPoint;
     }
-    getcBEPoint()
-    {
+    getcBEPoint() {
         return this.cBEPoint;
     }
 
@@ -389,19 +464,17 @@ class NodeInfo {
     getRightCid() {
         return this.rightid;
     }
-    
+
     setfatherid(fatherid) {
         this.fatherid = fatherid;
     }
     getfatherid() {
         return this.fatherid;
     }
-    setLeftCid(leftid)
-    {
-     this.leftid=leftid;
+    setLeftCid(leftid) {
+        this.leftid = leftid;
     }
-    getLeftCid()
-    {
+    getLeftCid() {
         return this.leftid;
     }
 
@@ -410,7 +483,7 @@ class NodeItem {
     constructor(nodeid) {
         this.nodeid = nodeid;
         this.sonNode = null;
-        this.bortherNode=null;
+        this.bortherNode = null;
     }
 
 }
@@ -424,22 +497,18 @@ class NodeItemList {
         //     currentNode = currentNode.nextnode;
         // }
         // return currentNode;
-        let cbortherNode=this.head.bortherNode;
-        while(cbortherNode!=null&&cbortherNode.nodeid!=nodeitemID)
-        {
-            cbortherNode=cbortherNode.bortherNode;
+        let cbortherNode = this.head.bortherNode;
+        while (cbortherNode != null && cbortherNode.nodeid != nodeitemID) {
+            cbortherNode = cbortherNode.bortherNode;
         }
-        if(cbortherNode!=null)
-        {
+        if (cbortherNode != null) {
             return cbortherNode;
         }
-        let csonNode=this.head.sonNode;
-        while(csonNode!=null&&csonNode.nodeid!=nodeitemID)
-        {
-            csonNode=csonNode.sonNode;
+        let csonNode = this.head.sonNode;
+        while (csonNode != null && csonNode.nodeid != nodeitemID) {
+            csonNode = csonNode.sonNode;
         }
-        if(csonNode!=null)
-        {
+        if (csonNode != null) {
             return csonNode;
         }
     }
@@ -473,14 +542,14 @@ function convertToNode(raw) {
     let arr = raw.split(/\n(?=\s*#)/).filter(s => s != "").map(s => s.trim());
     // let nodeList=``;
     let nodes = new Array().fill(``);
-   // let mainnodes=new Array().fill(``);
+    // let mainnodes=new Array().fill(``);
     // let nodeInfo = new NodeInfo();
     // nodeInfo.setNodeName(`节点五`);
     // nodeInfo.setNodeId(`node5`);
     // nodeInfo.setNodeType(`father`);
     // nodeInfo.setNodeX(nodeDPosX);
     // nodeInfo.setNodeY(nodeDposY);
-    let nowMain=``;
+    let nowMain = ``;
     // arr.forEach(index=>{
     //     if(isMain(index))
     //     {
@@ -501,70 +570,71 @@ function convertToNode(raw) {
         }
         nodeInfoItem.setNodeContent(nodeContentStr);
         nodeInfoItem.setNodeId(defalutNodeId + nodeindex);
-        
+
         if (isMain(arr[i])) {
             nodeInfoItem.setNodeType(`father`);
             // if(nowMain==``)
             // {
-               nowMain=nodeInfoItem;
-            
-               // mainnodes.push(nodeInfoItem);
-           // }
-            
+            nowMain = nodeInfoItem;
+
+            // mainnodes.push(nodeInfoItem);
+            // }
+
         }
         else {
             nodeInfoItem.setNodeType(`son`);
-         
+
         }
         //判断下一行是否为空
         if (arr[i + 1] !== undefined) {
-           
-          
+
+
             switch (true) {
 
                 case (isMain(arr[i]) && isMain(arr[i + 1])):
                     {
-                      
-                        setNodeFConnect(nodeInfoItem,defalutNodeId + (nodeindex+1));
+
+                        setNodeFConnect(nodeInfoItem, defalutNodeId + (nodeindex + 1));
 
                     }; break;
                 case (isMain(arr[i]) && isSub(arr[i + 1])):
                     {
-                        setNodeSConnect(nodeInfoItem,defalutNodeId + (nodeindex+1));
-                      
+
+                        setNodeSConnect(nodeInfoItem, defalutNodeId + (nodeindex + 1));
+
                     }; break;
                 case (isSub(arr[i]) && isSub(arr[i + 1])):
                     {
-                        setNodeSConnect(nodeInfoItem,defalutNodeId + (nodeindex+1));
-                       
+
+                        setNodeSConnect(nodeInfoItem, defalutNodeId + (nodeindex + 1));
+
                     }; break;
                 case (isSub(arr[i]) && isMain(arr[i + 1])):
                     {
-                        if(i==0)
-                        {
-                           
-                            setNodeFConnect(nodeInfoItem,defalutNodeId + (nodeindex+1));
+                        if (i == 0) {
+
+                            setNodeFConnect(nodeInfoItem, defalutNodeId + (nodeindex + 1));
                         }
-                        else if(nowMain!=``)
-                        {
-                           //最近的主节点
-                           nowMain.setsonid(``);
-                           //目前遍历到的节点(副节点)
-                           nodeInfoItem.setRightCid(``);
-                           //连接的样式是统一的
-                           //设置一个节点的连接样式是从左到右的话，该节点所有连接样式都会变成从左到右
-                           //所以先将最近的主节点与第一个子节点进行分离，然后进行再连接，由第一个子节点发出
-                           setNodeFConnect(nowMain,defalutNodeId + (nodeindex+1));
-                           setNodeSFConnect(nodeInfoItem,nowMain.getNodeId());
+                        else if (nowMain != ``) {
+                            //    //最近的主节点
+                            //   nowMain.setfatherid(``);
+                            //    nowMain.setsonid(``);
+                            //    //目前遍历到的节点(副节点)
+                            //    nodeInfoItem.setRightCid(``);
+                            //连接的样式是统一的
+                            //设置一个节点的连接样式是从左到右的话，该节点所有连接样式都会变成从左到右
+                            //所以先将最近的主节点与第一个子节点进行分离，然后进行再连接，由第一个子节点发出
+                            setNodeFConnect(nowMain, defalutNodeId + (nodeindex + 1));
+                            //    setNodeSFConnect(nodeInfoItem,nowMain.getNodeId());
                         }
-                        else 
-                        {
-                           nodeInfoItem.setsonid(``);
-                           nodeInfoItem.setRightCid(``);
+                        else {
+                            nodeInfoItem.setsonid(``);
+                            nodeInfoItem.setRightCid(``);
+                            nowMain.setfatherid(``);
                         }
-                            
-                     
-                        
+
+
+
                     }; break;
             }
         }
@@ -574,12 +644,14 @@ function convertToNode(raw) {
                 case (isMain(arr[i])):
                     {
                         nodeInfoItem.setsonid(``);
-                           nodeInfoItem.setRightCid(``);
+                        nodeInfoItem.setRightCid(``);
+                        nowMain.setfatherid(``);
                     }; break;
                 case (isSub(arr[i])):
                     {
                         nodeInfoItem.setsonid(``);
-                           nodeInfoItem.setRightCid(``);
+                        nodeInfoItem.setRightCid(``);
+                        nowMain.setfatherid(``);
                     }; break;
             }
         }
@@ -593,11 +665,12 @@ function convertToNode(raw) {
         //     nodeList.AddItem(nodeInfoItem);
         // }
         nodes[i] = nodeInfoItem;
-       
+
         nodeindex++;
-       
+
+
     }
-   
+
     return nodes;
 }
 function loadMarkdown(raw) {
@@ -739,7 +812,7 @@ const Sliderbar = {
                 // this.isShrink = true;
             }
             this.isShrink = !this.isShrink;
-            
+
         };
         this.$sliderbarExitBtn.onclick = () => {
             if (this.isShowBottom) {
@@ -763,7 +836,7 @@ const Theme = {
         this.$transition = $(`.theme .transition`);
         this.$align = $(`.theme .align`);
         this.$reveal = $(`.reveal`);
-  
+
         this.bind();
         this.loadTheme();
     },
@@ -810,7 +883,7 @@ const Editor = {
         this.$editInput = $(`.editor textarea`);
         this.$saveBtn = $(`.editor .button-save`);
         this.$slideContainer = $(`.slides`);
-      
+
         this.markdown = localStorage.markdown || TPL;//检测是否存在localStorage.markdown，如果有则传入localStorage.markdown内容，否则传入初始语句
         this.bind();
         this.start();
@@ -902,45 +975,52 @@ class MarkdownNode {
             nodeInfo.setNodeContent(``);
         }
         // if (this.nodeType == `son`) {
-            // if (isEmpty(nodeInfo.getsonid()) ||
-            //     isEmpty(nodeInfo.getconnectEPoint()) ||
-            //     isEmpty(nodeInfo.getconnectSPoint())) {
-            //     this.isConnect = false;
-            // }
-            // else {
-               
-                //this.connectBortherid=nodeInfo.getRightCid();
-                // this.connectId = nodeInfo.getconnectId();
-                // console.log(`当前节点ID为${this.nodeID},连接ID为${this.connectId}`);
-                // this.connectStartPoint = nodeInfo.getconnectSPoint();
-                // this.connectEndPoint = nodeInfo.getconnectEPoint();
-                // this.isConnect = true;
-            // }
+        // if (isEmpty(nodeInfo.getsonid()) ||
+        //     isEmpty(nodeInfo.getconnectEPoint()) ||
+        //     isEmpty(nodeInfo.getconnectSPoint())) {
+        //     this.isConnect = false;
+        // }
+        // else {
+
+        //this.connectBortherid=nodeInfo.getRightCid();
+        // this.connectId = nodeInfo.getconnectId();
+        // console.log(`当前节点ID为${this.nodeID},连接ID为${this.connectId}`);
+        // this.connectStartPoint = nodeInfo.getconnectSPoint();
+        // this.connectEndPoint = nodeInfo.getconnectEPoint();
+        // this.isConnect = true;
+        // }
         //}
         // else if (this.nodeType == `father`) {
-            // if (isEmpty(nodeInfo.getsonid()) ||
-            //     isEmpty(nodeInfo.getRightCid())||
-            //     isEmpty(nodeInfo.getconnectEPoint()) ||
-            //     isEmpty(nodeInfo.getconnectSPoint())) {
-            //     this.isConnect = false;
-            // }
-            // else {
-                this.connectSonid=nodeInfo.getsonid();
-                this.connectBortherid=nodeInfo.getRightCid();
-                // this.connectId = nodeInfo.getconnectId();
-                // console.log(`当前节点ID为${this.nodeID},连接ID为${this.connectId}`);
-                // this.connectStartPoint = nodeInfo.getconnectSPoint();
-                this.connectEndPoint = nodeInfo.getconnectEPoint();
-                this.isConnect = true;
-            // }
-       // }
+        // if (isEmpty(nodeInfo.getsonid()) ||
+        //     isEmpty(nodeInfo.getRightCid())||
+        //     isEmpty(nodeInfo.getconnectEPoint()) ||
+        //     isEmpty(nodeInfo.getconnectSPoint())) {
+        //     this.isConnect = false;
+        // }
+        // else {
+        // this.connectSonid=nodeInfo.getsonid();
+        // this.connectBortherid=nodeInfo.getRightCid();
+        this.connectLeftid = nodeInfo.getLeftCid();
+        this.connectRightid = nodeInfo.getRightCid();
+        this.connectTopid = nodeInfo.getfatherid();
+        this.connectBottomid = nodeInfo.getsonid();
+        // this.connectId = nodeInfo.getconnectId();
+        // console.log(`当前节点ID为${this.nodeID},连接ID为${this.connectId}`);
+        // this.connectStartPoint = nodeInfo.getconnectSPoint();
+        this.cLEndPoint = nodeInfo.getcLEPoint();
+        this.cREndPoint = nodeInfo.getcREPoint();
+        this.cTEndPoint = nodeInfo.getcTEPoint();
+        this.cBEndPoint = nodeInfo.getcBEPoint();
+        this.isConnect = true;
+        // }
+        // }
 
         // if (isEmpty(nodeInfo.getconnectId()) ||
         //     isEmpty(nodeInfo.getconnectEPoint()) ||
         //     isEmpty(nodeInfo.getconnectSPoint())) {
         //     this.isConnect = false;
         // }
-     
+
         this.nodePosX = nodeInfo.nodePosX;
         this.nodePosY = nodeInfo.nodePosY;
         this.nodeContent = nodeInfo.getNodeContent();
@@ -981,7 +1061,7 @@ class MarkdownNode {
 
 
         if (this.nodeContent != ``) {
-          
+
             this.nodeContent.split(/<br>/).forEach(index => {
                 if (index != ``) {
                     switch (true) {
@@ -989,15 +1069,15 @@ class MarkdownNode {
                             this.nodeAddInput(index.replace(/\*+|~+|<br>/g, ``), `deleteline`);
                         }; break;
                         case ((/^\*{3}}/.test(index))): {
-                     
+
                             this.nodeAddInput(index.replace(/\*+|~+|<br>/g, ``), `italicbolid`);
                         }; break;
                         case ((/^\*{2}/.test(index))): {
-                      
+
                             this.nodeAddInput(index.replace(/\*+|~+|<br>/g, ``), `bolid`);
                         }; break;
                         case ((/^\*{1}/).test(index)): {
-                         
+
                             this.nodeAddInput(index.replace(/\*+|~+|<br>/g, ``), `italic`);
                         }; break;
 
@@ -1024,7 +1104,7 @@ class MarkdownNode {
                     isSource: true,
                     isTarget: true,
                     connector: ['Bezier'],
-                  
+
                     connectorStyle: {
                         //#00a8ff父节点连接颜色
                         outlineStroke: '#00a8ff',
@@ -1036,7 +1116,7 @@ class MarkdownNode {
                     }
 
                 };
-              
+
                 jsPlumb.addEndpoint($node.id, {
                     anchor: 'Left'
                 }, common);
@@ -1049,7 +1129,10 @@ class MarkdownNode {
                 jsPlumb.addEndpoint($node.id, {
                     anchor: 'Top'
                 }, common);
+                jsPlumb.bind('connection', function (conn, originalEvent) {
 
+                    connectEvent(conn);
+                });
 
                 jsPlumb.draggable($node.id, { containment: self.$nodeDrawing.id });
             });
@@ -1061,7 +1144,7 @@ class MarkdownNode {
                     isSource: true,
                     isTarget: true,
                     connector: ['Bezier'],
-                    
+
                     connectorStyle: {
                         //#00a8ff父节点连接颜色
                         outlineStroke: '#00a8ff',
@@ -1072,7 +1155,7 @@ class MarkdownNode {
                         strokeWidth: 3
                     }
                 };
-              
+
                 jsPlumb.addEndpoint($node.id, {
                     anchor: 'Left'
                 }, common);
@@ -1082,6 +1165,9 @@ class MarkdownNode {
                 jsPlumb.addEndpoint($node.id, {
                     anchor: 'Bottom'
                 }, common);
+                jsPlumb.bind('connection', function (conn, originalEvent) {
+                    connectEvent(conn);
+                });
                 jsPlumb.draggable($node.id, { containment: self.$nodeDrawing.id });
             });
         }
@@ -1145,6 +1231,7 @@ class MarkdownNode {
         this.$nodemainitem.appendChild($nodeContent);
         this.$nodemainitem.appendChild($nodeInput);
     };
+ 
 
 }
 
@@ -1160,10 +1247,14 @@ const NodeDrawing = {
 
         // this.nodes=nodesInfos;
         let markdownNodes = new Array().fill(``);
+         //读取JSON字符串
+         readNodeInfoJSON();
         for (let index = 0; index < nodesInfos.length; index++) {
             markdownNodes[index] = new MarkdownNode(nodesInfos[index], this.$nodeDrawing);
         };
+        readNodePosInfoJSON();
         markdownNodes.forEach(index => {
+
             // if(index.nodeType==`son`)
             // {
             //     nodeConnect(index,index.connectBortherid);
@@ -1171,14 +1262,17 @@ const NodeDrawing = {
             //     console.log(`触发分类`);
             // }
             // else
-          //  {
-                nodeConnect(index,index.connectBortherid);
-                nodeConnect(index,index.connectSonid);
-          //  }
-           
+            //  {
+            nodeConnect(index, `Left`, index.cLEndPoint, index.connectLeftid);
+            nodeConnect(index, `Right`, index.cREndPoint, index.connectRightid);
+            nodeConnect(index, `Top`, index.cTEndPoint, index.connectTopid);
+            nodeConnect(index, `Bottom`, index.cBEndPoint, index.connectBottomid);
+            // nodeConnect(index,index.connectBortherid);
+            // nodeConnect(index,index.connectSonid);
+            //  }
+
         });
-        //读取JSON字符串
-        readNodeInfoJSON();
+
         //默认节点名
         this.defalutNodeName = `节点`;
         this.bind();
@@ -1248,6 +1342,7 @@ const NodeDrawing = {
                 //in$(node,`.item input`).value
                 index.setNodeX(node.style.left);
                 index.setNodeY(node.style.top);
+
                 index.setNodeContent(nodecontent);
 
                 writeNodeInfoJSON(index);
@@ -1257,14 +1352,16 @@ const NodeDrawing = {
                 else {
                     this.markdown += `\n## ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
                 }
-            })
+            }
+            )
+            console.log(JSON.parse(localStorage.nodesInfo));
             // let nodeBHead=nodesInfos.find(index=>index.getNodeId()== `node0`);;
             // let nodeSHead=null;
             // if(!isEmpty(nodesInfos[0].getsonid()))
             // {
             //      nodeSHead=nodesInfos.find(index=>index.getNodeId()== nodeBHead.getsonid());
             // }
-          
+
             // while(nodeBHead!=null)
             // {
             //     if (nodeBHead.getNodeType() != `father`) {
@@ -1287,33 +1384,33 @@ const NodeDrawing = {
             //         {
             //             nodeSHead=null;
             //         }
-                  
+
             //     }
             //     try {
             //         nodeBHead=nodesInfos.find(index=>index.getNodeId()== nodeBHead.getRightCid());
             //     } catch (error) {
             //         nodeBHead=null;
             //     }
-               
+
             // }
             // switch(true)
             // {
-                
-                // case(nodeHead.nodeType==`father`):
-                // {
-                //     let currentSNode=nodeHead;
-                //     while(nodeHead!=null)
-                //     {
 
-                //     }
-                // };break;
-                // case(nodeHead.nodeType==`son`):
-                // {
+            // case(nodeHead.nodeType==`father`):
+            // {
+            //     let currentSNode=nodeHead;
+            //     while(nodeHead!=null)
+            //     {
 
-                // };break;
-                 
+            //     }
+            // };break;
+            // case(nodeHead.nodeType==`son`):
+            // {
+
+            // };break;
+
             // }
-         
+
             localStorage.markdown = this.markdown;
             location.reload();
         }
@@ -1323,13 +1420,13 @@ const NodeDrawing = {
 const Print = {
     init() {
         this.$download = $(`.sliderbarContent.download .body.download button`);
-        
+
         this.bind();
         this.start();
     },
     bind() {
         this.$download.addEventListener(`click`, () => {
-         
+
             let $link = document.createElement(`a`);
             $link.setAttribute(`target`, `_blank`);
             $link.setAttribute(`href`, location.href.replace(/#\/.+/, ``) + `?print-pdf`);
