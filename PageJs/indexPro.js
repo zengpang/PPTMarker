@@ -104,31 +104,33 @@ function connectEvent(conn) {
         // let targetItemIndex=nodesInfos.indexOf(targetItem);
         let tEndpoint=conn.targetEndpoint.anchor.type;
         let sEndpoint=conn.sourceEndpoint.anchor.type;
-        console.log(nodesInfos[souceItemIndex]);
+        // console.log(nodesInfos[souceItemIndex]);
         
         switch (sEndpoint) {
             case (`Bottom`): {
                 souceItem.setcBEPoint(tEndpoint);
                 souceItem.setsonid(targetid);
-                console.log(targetid);
+            
             }; break;
             case (`Top`): {
                 souceItem.setcTEPoint(tEndpoint);
                 souceItem.setfatherid(targetid);
-                console.log(targetid);
+           
             }; break;
             case (`Left`): {
                 souceItem.setcLEPoint(tEndpoint);
                 souceItem.setLeftCid(targetid);
-                console.log(targetid);
+             
+            
             }; break;
             case (`Right`): {
                 souceItem.setcREPoint(tEndpoint);
                 souceItem.setRightCid(targetid);
-                console.log(targetid);
+               
+             
             }; break;
         }
-        console.log(nodesInfos[souceItemIndex]);
+        // console.log(nodesInfos[souceItemIndex]);
         // if(Math.abs(targetItemIndex-souceItemIndex)>1)
         // {
         //      isChange(nodesInfos[targetItemIndex],nodesInfos[(souceItemIndex+1>=nodesInfos.length?souceItemIndex-1:souceItemIndex)]);
@@ -219,11 +221,11 @@ function readNodeInfoJSON() {
     }
 
     let nodesPosInfo = JSON.parse(localStorage.nodesInfo);
-    console.log(nodesPosInfo);
+     console.log(nodesPosInfo);
     nodesPosInfo.forEach(index => {
         let nodeid = index.nodeId;
         let nodeInfo = nodesInfos.find(index => index.getNodeId() == nodeid);
-
+       
         if (!isEmpty(nodeInfo)) {
 
 
@@ -233,7 +235,7 @@ function readNodeInfoJSON() {
                    
                 };
                 case (isEmpty(nodeInfo.getRightCid()) && !isEmpty(index.nodeRightid)): {
-                    nodeInfo.setLeftCid(index.nodeRightid);
+                    nodeInfo.setRightCid(index.nodeRightid);
                 };
                 case (isEmpty(nodeInfo.getfatherid()) && !isEmpty(index.nodeFid)): {
                     nodeInfo.setfatherid(index.nodeFid);
@@ -257,13 +259,17 @@ function readNodeInfoJSON() {
                     nodeInfo.setcBEPoint(index.nodeCBEPoint);
                 };
             }
-            
+            if(nodeInfo.getNodeId()==`node0`)
+            {
+                console.log(nodeInfo.getLeftCid());
+            }
             // let nodeElement = document.getElementById(index.nodeId);
             // if (nodeElement != null) {
             //     nodeElement.style.left = index.nodePosX;
             //     nodeElement.style.top = index.nodePosY;
             // }
         }
+       
     })
 }
 function readNodePosInfoJSON()
@@ -273,7 +279,7 @@ function readNodePosInfoJSON()
     }
 
     let nodesPosInfo = JSON.parse(localStorage.nodesInfo);
-    console.log(nodesPosInfo);
+    // console.log(nodesPosInfo);
     nodesPosInfo.forEach(index => {
         let nodeid = index.nodeId;
         let nodeInfo = nodesInfos.find(index => index.getNodeId() == nodeid);
@@ -296,7 +302,7 @@ function convert(raw) {
     let html = ``;
     //遍历用户输入
     for (let i = 0; i < arr.length; i++) {
-        // console.log(arr[i].split(/\n+|\s+/));
+        // console.log(arr[i].split(/\n+|\sgit +/));
         // console.log((arr[i].split(/#+|\n/)));
         //判断下一行是否为空
         if (arr[i + 1] !== undefined) {
