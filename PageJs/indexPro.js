@@ -88,6 +88,19 @@ const isSub = str => (/^#{3}(?!#)/).test(str);
 const isEmpty = str => (str == null || str == `` || str === `undefined`);
 //node show jtk-endpoint-anchor jtk-draggable jtk-connected 元素连接之后的class
 //node show jtk-endpoint-anchor jtk-draggable 元素未连接的class
+// const setmisalignId=(idStr)=>{
+
+//     if(!isEmpty(nodesInfos))
+//     {
+//          nodesInfos.forEach(index=>{
+//             if(index.getNodeId()==idStr)
+//             {
+
+//             }
+//          })
+//     }
+//     return idStr;
+// }
 const isChange = (node1, node2) => {
     let b = 0;
     b = node1;
@@ -115,7 +128,7 @@ function connectDeleteEvent(conn) {
         // let targetItemIndex=nodesInfos.indexOf(targetItem);
         let tEndpoint = conn.targetEndpoint.anchor.type;
         let sEndpoint = conn.sourceEndpoint.anchor.type;
-        console.log(`目标id为` + souceid);
+        
         switch (true) {
             case (souceItem.getLeftCid() == targetid): {
                 souceItem.setcLEPoint(``);
@@ -229,7 +242,7 @@ function connectEvent(conn) {
         let tEndpoint = conn.targetEndpoint.anchor.type;
         let sEndpoint = conn.sourceEndpoint.anchor.type;
         // console.log(nodesInfos[souceItemIndex]);
-        console.log(sEndpoint + ` ` + tEndpoint);
+       
 
         switch (sEndpoint) {
             case (`Bottom`): {
@@ -241,18 +254,18 @@ function connectEvent(conn) {
             case (`Top`): {
                 souceItem.setcTEPoint(tEndpoint);
                 souceItem.setfatherid(targetid);
-
+  
             }; break;
             case (`Left`): {
                 souceItem.setcLEPoint(tEndpoint);
                 souceItem.setLeftCid(targetid);
-
-
+                console.log(souceItem.getLeftCid());
+ 
             }; break;
             case (`Right`): {
                 souceItem.setcREPoint(tEndpoint);
                 souceItem.setRightCid(targetid);
-
+                console.log(souceItem.getRightCid());
 
             }; break;
         }
@@ -271,13 +284,13 @@ function connectEvent(conn) {
             case (`Left`): {
                 targetItem.setcLEPoint(sEndpoint);
                 targetItem.setLeftCid(souceid);
-
+                console.log(targetItem.getLeftCid());
 
             }; break;
             case (`Right`): {
                 targetItem.setcREPoint(sEndpoint);
                 targetItem.setRightCid(souceid);
-
+                console.log(targetItem.getRightCid());
 
             }; break;
         };
@@ -715,13 +728,25 @@ function convertToNode(raw) {
             nodeContentStr += nodeinfoStrs[i];
         }
         nodeInfoItem.setNodeContent(nodeContentStr);
-        nodeInfoItem.setNodeId((nodeinfoStrs[1].replace(`-->`, ``).split(/<!--/)[1] || defalutNodeId + nodeindex).trim());
+        let nodeloadid = (nodeinfoStrs[1].replace(`-->`, ``).split(/<!--/)[1]).trim();
+        if (!isEmpty(nodeloadid) && !window.isNaN(parseInt(nodeloadid.replace(defalutNodeId, ``)))) {
+            nodeInfoItem.setNodeId(nodeloadid);
+            nodeindex = parseInt(nodeloadid.replace(defalutNodeId, ``));
+        }
+        else if (!isEmpty(nodeloadid) && window.isNaN(parseInt(nodeloadid.replace(defalutNodeId, ``)))) {
+            nodeInfoItem.setNodeId(nodeloadid);
+        }
+        else {
+            nodeInfoItem.setNodeId(defalutNodeId + nodeindex);
+        }
+        // console.log(nodeinfoStrs[1].replace(`-->`, ``).split(/<!--/)[1].replace(defalutNodeId,``));
+        // nodeInfoItem.setNodeId((nodeinfoStrs[1].replace(`-->`, ``).split(/<!--/)[1] || defalutNodeId + nodeindex).trim());
         //  console.log((nodeinfoStrs[1].replace(`-->`,``).split(/<!--/)[1]||defalutNodeId + nodeindex).trim());
         if (isMain(arr[i])) {
             nodeInfoItem.setNodeType(`father`);
             // if(nowMain==``)
             // {
-           
+
 
             // mainnodes.push(nodeInfoItem);
             // }
@@ -737,7 +762,7 @@ function convertToNode(raw) {
     }
     for (let i = 0; i < arr.length; i++) {
         if (isMain(arr[i])) {
-           
+
             // if(nowMain==``)
             // {
             nowMain = nodes[i];
@@ -746,76 +771,76 @@ function convertToNode(raw) {
             // }
 
         }
-    //判断下一行是否为空
-    if (arr[i + 1] !== undefined) {
+        //判断下一行是否为空
+        if (arr[i + 1] !== undefined) {
 
-      
-        switch (true) {
 
-            case (isMain(arr[i]) && isMain(arr[i + 1])):
-                {
+            switch (true) {
 
-                    setNodeFConnect(nodes[i], nodes[i+1].getNodeId());
+                case (isMain(arr[i]) && isMain(arr[i + 1])):
+                    {
 
-                }; break;
-            case (isMain(arr[i]) && isSub(arr[i + 1])):
-                {
+                        setNodeFConnect(nodes[i], nodes[i + 1].getNodeId());
 
-                    setNodeSConnect(nodes[i], nodes[i+1].getNodeId());
+                    }; break;
+                case (isMain(arr[i]) && isSub(arr[i + 1])):
+                    {
 
-                }; break;
-            case (isSub(arr[i]) && isSub(arr[i + 1])):
-                {
+                        setNodeSConnect(nodes[i], nodes[i + 1].getNodeId());
 
-                    setNodeSConnect(nodes[i], nodes[i+1].getNodeId());
+                    }; break;
+                case (isSub(arr[i]) && isSub(arr[i + 1])):
+                    {
 
-                }; break;
-            case (isSub(arr[i]) && isMain(arr[i + 1])):
-                {
-                    if (i == 0) {
+                        setNodeSConnect(nodes[i], nodes[i + 1].getNodeId());
 
-                        setNodeFConnect(nodes[i], nodes[i+1].getNodeId());
-                    }
-                    else if (nowMain != ``) {
-                        //    //最近的主节点
-                        //   nowMain.setfatherid(``);
-                        //    nowMain.setsonid(``);
-                        //    //目前遍历到的节点(副节点)
-                        //    nodeInfoItem.setRightCid(``);
-                        //连接的样式是统一的
-                        //设置一个节点的连接样式是从左到右的话，该节点所有连接样式都会变成从左到右
-                        //所以先将最近的主节点与第一个子节点进行分离，然后进行再连接，由第一个子节点发出
-                        setNodeFConnect(nowMain, nodes[i+1].getNodeId());
-                        //    setNodeSFConnect(nodeInfoItem,nowMain.getNodeId());
-                    }
-                    else {
+                    }; break;
+                case (isSub(arr[i]) && isMain(arr[i + 1])):
+                    {
+                        if (i == 0) {
+
+                            setNodeFConnect(nodes[i], nodes[i + 1].getNodeId());
+                        }
+                        else if (nowMain != ``) {
+                            //    //最近的主节点
+                            //   nowMain.setfatherid(``);
+                            //    nowMain.setsonid(``);
+                            //    //目前遍历到的节点(副节点)
+                            //    nodeInfoItem.setRightCid(``);
+                            //连接的样式是统一的
+                            //设置一个节点的连接样式是从左到右的话，该节点所有连接样式都会变成从左到右
+                            //所以先将最近的主节点与第一个子节点进行分离，然后进行再连接，由第一个子节点发出
+                            setNodeFConnect(nowMain, nodes[i + 1].getNodeId());
+                            //    setNodeSFConnect(nodeInfoItem,nowMain.getNodeId());
+                        }
+                        else {
+                            nodes[i].setsonid(``);
+                            nodes[i].setRightCid(``);
+                            nowMain.setfatherid(``);
+                        }
+
+
+
+                    }; break;
+            }
+        }
+        else //如果为空判断遍历到最后一行
+        {
+            switch (true) {
+                case (isMain(arr[i])):
+                    {
                         nodes[i].setsonid(``);
                         nodes[i].setRightCid(``);
                         nowMain.setfatherid(``);
-                    }
-
-
-
-                }; break;
+                    }; break;
+                case (isSub(arr[i])):
+                    {
+                        nodes[i].setsonid(``);
+                        nodes[i].setRightCid(``);
+                        nowMain.setfatherid(``);
+                    }; break;
+            }
         }
-    }
-    else //如果为空判断遍历到最后一行
-    {
-        switch (true) {
-            case (isMain(arr[i])):
-                {
-                    nodes[i].setsonid(``);
-                    nodes[i].setRightCid(``);
-                    nowMain.setfatherid(``);
-                }; break;
-            case (isSub(arr[i])):
-                {
-                    nodes[i].setsonid(``);
-                    nodes[i].setRightCid(``);
-                    nowMain.setfatherid(``);
-                }; break;
-        }
-    }
     }
 
     // if(i==0)
@@ -826,11 +851,10 @@ function convertToNode(raw) {
     // {
     //     nodeList.AddItem(nodeInfoItem);
     // }
-   
+
 
     return nodes;
 }
-
 
 
 function loadMarkdown(raw) {
@@ -1525,25 +1549,57 @@ const NodeDrawing = {
                 }
             }
             )
+            // fnodeinfos.forEach(index=>{
+            //     console.log(index);
+            // });
+            // console.log(fnodeinfos[0].getNodeName());
+            let leftNode = fnodeinfos[0];
+            let rightNode=fnodeinfos[0];
+            this.markdown += `\n## ${leftNode.getNodeName().trim()} <!-- ${leftNode.getNodeId()} -->\n${leftNode.getNodeContent().trim()}`;
+            this.sonNodefind(leftNode, cnodeinfos);
+            while (!isEmpty(leftNode)) {
+                if (!isEmpty(leftNode.getLeftCid())) {
+                    leftNode = fnodeinfos.find(i=>i.getNodeId()==leftNode.getLeftCid());
+                    this.markdown += `\n## ${leftNode.getNodeName().trim()} <!-- ${leftNode.getNodeId()} -->\n${leftNode.getNodeContent().trim()}`;
+                    this.sonNodefind(leftNode, cnodeinfos);
+                }
+                else {
+                    leftNode = null;
+                }
+            }
+            while(!isEmpty(rightNode))
+            {
+                if(!isEmpty(rightNode.getRightCid()))
+                {
+                    rightNode = fnodeinfos.find(i=>i.getNodeId()==rightNode.getRightCid());
+                    this.markdown += `\n## ${rightNode.getNodeName().trim()} <!-- ${rightNode.getNodeId()} -->\n${rightNode.getNodeContent().trim()}`;
+                    this.sonNodefind(rightNode, cnodeinfos);
+                }
+                else
+                {
+                    rightNode=null;
+                }
+            }
             // console.log(JSON.parse(localStorage.nodesInfo));
-            fnodeinfos.forEach(index => {
-                this.markdown += `\n## ${index.getNodeName().trim()} <!-- ${index.getNodeId()} -->\n${index.getNodeContent().trim()}`;
-                let sonNode = ``;
-                if (!isEmpty(index.getsonid())) {
-                    sonNode = cnodeinfos.find(i => i.getNodeId() == index.getsonid());
-                    console.log(index.getNodeId() + " " + index.getsonid());
-                    this.markdown += `\n### ${sonNode.getNodeName().trim()} <!-- ${sonNode.getNodeId()} --> \n${sonNode.getNodeContent().trim()}`;
-                }
-                while (!isEmpty(sonNode)) {
-                    if (!isEmpty(sonNode.getsonid())) {
-                        sonNode = cnodeinfos.find(i => i.getNodeId() == sonNode.getsonid());
-                        this.markdown += `\n### ${sonNode.getNodeName().trim()} <!-- ${sonNode.getNodeId()} -->  \n${sonNode.getNodeContent().trim()}`;
-                    }
-                    else {
-                        sonNode = null;
-                    }
-                }
-            })
+            // fnodeinfos.forEach(index => {
+            //     this.markdown += `\n## ${index.getNodeName().trim()} <!-- ${index.getNodeId()} -->\n${index.getNodeContent().trim()}`;
+                // let sonNode = ``;
+                // if (!isEmpty(index.getsonid())) {
+                //     sonNode = cnodeinfos.find(i => i.getNodeId() == index.getsonid());
+
+                //     this.markdown += `\n### ${sonNode.getNodeName().trim()} <!-- ${sonNode.getNodeId()} --> \n${sonNode.getNodeContent().trim()}`;
+                // }
+                // while (!isEmpty(sonNode)) {
+                //     if (!isEmpty(sonNode.getsonid())) {
+                //         sonNode = cnodeinfos.find(i => i.getNodeId() == sonNode.getsonid());
+                //         this.markdown += `\n### ${sonNode.getNodeName().trim()} <!-- ${sonNode.getNodeId()} -->  \n${sonNode.getNodeContent().trim()}`;
+                //     }
+                //     else {
+                //         sonNode = null;
+                //     }
+                // }
+            //     this.sonNodefind(index, cnodeinfos);
+            // })
 
             // cnodeinfos.forEach(index => {
             //     this.markdown += `\n### ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
@@ -1683,7 +1739,7 @@ const NodeDrawing = {
             // }
 
             localStorage.markdown = this.markdown;
-            // console.log(this.markdown);
+            console.log(this.markdown);
             // nodesInfos = convertToNode(this.markdown);
             //    let newNodesPos=convertToNode(this.markdown);
             //    for(let i=0;i<newNodesPos.length;i++)
@@ -1693,7 +1749,25 @@ const NodeDrawing = {
             // nodesInfos.forEach(index=>{
             //     writeNodeInfoJSON(index);
             // })
-            location.reload();
+               location.reload();
+        }
+    },
+    //节点遍历
+    sonNodefind(index, cnodeinfos) {
+        let sonNode = ``;
+        if (!isEmpty(index.getsonid())) {
+            sonNode = cnodeinfos.find(i => i.getNodeId() == index.getsonid());
+
+            this.markdown += `\n### ${sonNode.getNodeName().trim()} <!-- ${sonNode.getNodeId()} --> \n${sonNode.getNodeContent().trim()}`;
+        }
+        while (!isEmpty(sonNode)) {
+            if (!isEmpty(sonNode.getsonid())) {
+                sonNode = cnodeinfos.find(i => i.getNodeId() == sonNode.getsonid());
+                this.markdown += `\n### ${sonNode.getNodeName().trim()} <!-- ${sonNode.getNodeId()} -->  \n${sonNode.getNodeContent().trim()}`;
+            }
+            else {
+                sonNode = null;
+            }
         }
     }
 }
