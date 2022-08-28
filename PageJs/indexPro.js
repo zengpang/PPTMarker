@@ -73,6 +73,7 @@ const setNodeSConnect = (node, nodeid) => {
     node.setcBEPoint(`Top`);
 
 }
+
 // // //配置子节点连接子节点信息
 // const setNodeSBConnect=node=>{
 //     node.setRightCid(defalutNodeId + (nodeindex + 1));
@@ -84,7 +85,7 @@ const in$ = (f, s) => f.querySelector(s);
 const in$$ = (f, s) => f.querySelectorAll(s);
 const isMain = str => (/^#{1,2}(?!#)/).test(str);
 const isSub = str => (/^#{3}(?!#)/).test(str);
-const isEmpty = str => (str == null || str == ``||str===`undefined`);
+const isEmpty = str => (str == null || str == `` || str === `undefined`);
 //node show jtk-endpoint-anchor jtk-draggable jtk-connected 元素连接之后的class
 //node show jtk-endpoint-anchor jtk-draggable 元素未连接的class
 const isChange = (node1, node2) => {
@@ -93,43 +94,193 @@ const isChange = (node1, node2) => {
     node1 = node2;
     node2 = b;
 }
+const markdownWrite = (node) => {
+    let markdownLine = ``;
+    if (node.getNodeType() != `father`) {
+        markdownLine += `\n### ${node.getNodeName().trim()} \n${node.getNodeContent().trim()}`;
+    }
+    else {
+        markdownLine += `\n## ${node.getNodeName().trim()} \n${node.getNodeContent().trim()}`;
+    }
+    return markdownLine;
+}
+function connectDeleteEvent(conn) {
+    if (!isEmpty(nodesInfos)) {
+
+        let souceItem = nodesInfos.find(index => index.getNodeId() == conn.source.id);
+        let souceid = conn.source.id;
+        let targetid = conn.target.id;
+        let targetItem = nodesInfos.find(index => index.getNodeId() == conn.target.id);
+        // let souceItemIndex=nodesInfos.indexOf(souceItem);
+        // let targetItemIndex=nodesInfos.indexOf(targetItem);
+        let tEndpoint = conn.targetEndpoint.anchor.type;
+        let sEndpoint = conn.sourceEndpoint.anchor.type;
+        console.log(`目标id为` + souceid);
+        switch (true) {
+            case (souceItem.getLeftCid() == targetid): {
+                souceItem.setcLEPoint(``);
+                souceItem.setLeftCid(``);
+            }; break;
+            case (souceItem.getRightCid() == targetid): {
+                souceItem.setcREPoint(``);
+                souceItem.setRightCid(``);
+            }; break;
+            case (souceItem.getfatherid() == targetid): {
+                souceItem.setcTEPoint(``);
+                souceItem.setfatherid(``);
+            }; break;
+            case (souceItem.getsonid() == targetid): {
+                souceItem.setcBEPoint(``);
+                souceItem.setsonid(``);
+            }; break;
+        }
+
+        switch (true) {
+            case (targetItem.getLeftCid() == souceid): {
+                targetItem.setcLEPoint(``);
+                targetItem.setLeftCid(``);
+            }; break;
+            case (targetItem.getRightCid() == souceid): {
+                targetItem.setcREPoint(``);
+                targetItem.setRightCid(``);
+            }; break;
+            case (targetItem.getfatherid() == souceid): {
+                targetItem.setcTEPoint(``);
+                targetItem.setfatherid(``);
+            }; break;
+            case (targetItem.getsonid() == souceid): {
+                targetItem.setcBEPoint(``);
+                targetItem.setsonid(``);
+            }; break;
+        }
+        //  if(souceItem.getLeftCid()==targetid)
+        //  {
+        //     souceItem.setLeftCid()==``;
+        //  }
+        // switch (sEndpoint) {
+        //     case (`Bottom`): {
+        //         souceItem.setcBEPoint(``);
+        //         souceItem.setsonid(``);
+
+
+        //     }; break;
+        //     case (`Top`): {
+        //         souceItem.setcBEPoint(``);
+        //         souceItem.setsonid(``);
+
+        //     }; break;
+        //     case (`Left`): {
+        //         souceItem.setcBEPoint(``);
+        //         souceItem.setsonid(``);
+
+
+        //     }; break;
+        //     case (`Right`): {
+        //         souceItem.setcBEPoint(``);
+        //         souceItem.setsonid(``);
+
+
+        //     }; break;
+        // }
+        // switch (tEndpoint) {
+        //     case (`Bottom`): {
+        //         targetItem.setcBEPoint(``);
+        //         targetItem.setsonid(``);
+
+
+        //     }; break;
+        //     case (`Top`): {
+        //         targetItem.setcBEPoint(``);
+        //         targetItem.setsonid(``);
+
+        //     }; break;
+        //     case (`Left`): {
+        //         targetItem.setcBEPoint(``);
+        //         targetItem.setsonid(``);
+
+
+        //     }; break;
+        //     case (`Right`): {
+        //         targetItem.setcBEPoint(``);
+        //         targetItem.setsonid(``);
+
+
+        //     }; break;
+        // };
+        // console.log(nodesInfos[souceItemIndex]);
+        // if(Math.abs(targetItemIndex-souceItemIndex)>1)
+        // {
+        //      isChange(nodesInfos[targetItemIndex],nodesInfos[(souceItemIndex+1>=nodesInfos.length?souceItemIndex-1:souceItemIndex)]);
+        //      console.log(`替换中`);
+        // }
+
+    }
+}
 function connectEvent(conn) {
 
     if (!isEmpty(nodesInfos)) {
-      
+
         let souceItem = nodesInfos.find(index => index.getNodeId() == conn.source.id);
-        let targetid=conn.target.id;
-        // let targetItem = nodesInfos.find(index => index.getNodeId() == conn.target.id);
-         let souceItemIndex=nodesInfos.indexOf(souceItem);
+        let souceid = conn.source.id;
+        let targetid = conn.target.id;
+        let targetItem = nodesInfos.find(index => index.getNodeId() == conn.target.id);
+        // let souceItemIndex=nodesInfos.indexOf(souceItem);
         // let targetItemIndex=nodesInfos.indexOf(targetItem);
-        let tEndpoint=conn.targetEndpoint.anchor.type;
-        let sEndpoint=conn.sourceEndpoint.anchor.type;
+        let tEndpoint = conn.targetEndpoint.anchor.type;
+        let sEndpoint = conn.sourceEndpoint.anchor.type;
         // console.log(nodesInfos[souceItemIndex]);
-        
+        console.log(sEndpoint + ` ` + tEndpoint);
+
         switch (sEndpoint) {
             case (`Bottom`): {
                 souceItem.setcBEPoint(tEndpoint);
                 souceItem.setsonid(targetid);
-            
+
+
             }; break;
             case (`Top`): {
                 souceItem.setcTEPoint(tEndpoint);
                 souceItem.setfatherid(targetid);
-           
+
             }; break;
             case (`Left`): {
                 souceItem.setcLEPoint(tEndpoint);
                 souceItem.setLeftCid(targetid);
-             
-            
+
+
             }; break;
             case (`Right`): {
                 souceItem.setcREPoint(tEndpoint);
                 souceItem.setRightCid(targetid);
-               
-             
+
+
             }; break;
         }
+        switch (tEndpoint) {
+            case (`Bottom`): {
+                targetItem.setcBEPoint(sEndpoint);
+                targetItem.setsonid(souceid);
+
+
+            }; break;
+            case (`Top`): {
+                targetItem.setcTEPoint(sEndpoint);
+                targetItem.setfatherid(souceid);
+
+            }; break;
+            case (`Left`): {
+                targetItem.setcLEPoint(sEndpoint);
+                targetItem.setLeftCid(souceid);
+
+
+            }; break;
+            case (`Right`): {
+                targetItem.setcREPoint(sEndpoint);
+                targetItem.setRightCid(souceid);
+
+
+            }; break;
+        };
         // console.log(nodesInfos[souceItemIndex]);
         // if(Math.abs(targetItemIndex-souceItemIndex)>1)
         // {
@@ -144,7 +295,7 @@ function connectEvent(conn) {
 function nodeConnect(nodeinfo, connectStartPoint, connectEndPoint, connectID) {
     if (!isEmpty(connectID) && !isEmpty(connectStartPoint) && !isEmpty(connectEndPoint)) {
         jsPlumb.ready(function () {
-            console.log(`开始链结`+connectStartPoint+connectEndPoint);
+            console.log(`开始链结` + connectStartPoint + connectEndPoint);
             jsPlumb.connect({
                 source: nodeinfo.nodeID,
                 target: connectID,
@@ -160,7 +311,7 @@ function nodeConnect(nodeinfo, connectStartPoint, connectEndPoint, connectID) {
             })
             console.log(`链结结束`);
         });
-        
+
     }
 
 }
@@ -221,59 +372,53 @@ function readNodeInfoJSON() {
     }
 
     let nodesPosInfo = JSON.parse(localStorage.nodesInfo);
-     console.log(nodesPosInfo);
+
     nodesPosInfo.forEach(index => {
         let nodeid = index.nodeId;
         let nodeInfo = nodesInfos.find(index => index.getNodeId() == nodeid);
-       
-        if (!isEmpty(nodeInfo)) {
+
+        // if (!isEmpty(nodeInfo)) {
 
 
-            switch (true) {
-                case (isEmpty(nodeInfo.getLeftCid()) && !isEmpty(index.nodeLeftid)): {
-                    nodeInfo.setLeftCid(index.nodeLeftid);
-                   
-                };
-                case (isEmpty(nodeInfo.getRightCid()) && !isEmpty(index.nodeRightid)): {
-                    nodeInfo.setRightCid(index.nodeRightid);
-                };
-                case (isEmpty(nodeInfo.getfatherid()) && !isEmpty(index.nodeFid)): {
-                    nodeInfo.setfatherid(index.nodeFid);
-                };
-                case (isEmpty(nodeInfo.getsonid()) && !isEmpty(index.nodeSid)): {
-                    nodeInfo.setsonid(index.nodeSid);
-                }
+        //     switch (true) {
+        //         case (isEmpty(nodeInfo.getLeftCid()) && !isEmpty(index.nodeLeftid)): {
+        //             nodeInfo.setLeftCid(index.nodeLeftid);
 
-                case (isEmpty(nodeInfo.getcLEPoint()) && !isEmpty(index.nodeCLEPoint)): {
-                    nodeInfo.setcLEPoint(index.nodeCLEPoint);
-                    
-                };
-                case (isEmpty(nodeInfo.getcREPoint()) && !isEmpty(index.nodeCREPoint)): {
-                    nodeInfo.setcREPoint(index.nodeCREPoint);
+        //         };
+        //         case (isEmpty(nodeInfo.getRightCid()) && !isEmpty(index.nodeRightid)): {
+        //             nodeInfo.setRightCid(index.nodeRightid);
+        //         };
+        //         case (isEmpty(nodeInfo.getfatherid()) && !isEmpty(index.nodeFid)): {
+        //             nodeInfo.setfatherid(index.nodeFid);
+        //         };
+        //         case (isEmpty(nodeInfo.getsonid()) && !isEmpty(index.nodeSid)): {
+        //             nodeInfo.setsonid(index.nodeSid);
+        //         }
+        //         case (isEmpty(nodeInfo.getcLEPoint()) && !isEmpty(index.nodeCLEPoint)): {
+        //             nodeInfo.setcLEPoint(index.nodeCLEPoint);
+        //         };
+        //         case (isEmpty(nodeInfo.getcREPoint()) && !isEmpty(index.nodeCREPoint)): {
+        //             nodeInfo.setcREPoint(index.nodeCREPoint);
 
-                };
-                case (isEmpty(nodeInfo.getcTEPoint()) && !isEmpty(index.nodeCTEPoint)): {
-                    nodeInfo.setcTEPoint(index.nodeCTEPoint);
-                };
-                case (isEmpty(nodeInfo.getcBEPoint()) && !isEmpty(index.nodeCBEPoint)): {
-                    nodeInfo.setcBEPoint(index.nodeCBEPoint);
-                };
-            }
-            if(nodeInfo.getNodeId()==`node0`)
-            {
-                console.log(nodeInfo.getLeftCid());
-            }
-            // let nodeElement = document.getElementById(index.nodeId);
-            // if (nodeElement != null) {
-            //     nodeElement.style.left = index.nodePosX;
-            //     nodeElement.style.top = index.nodePosY;
-            // }
-        }
-       
+        //         };
+        //         case (isEmpty(nodeInfo.getcTEPoint()) && !isEmpty(index.nodeCTEPoint)): {
+        //             nodeInfo.setcTEPoint(index.nodeCTEPoint);
+        //         };
+        //         case (isEmpty(nodeInfo.getcBEPoint()) && !isEmpty(index.nodeCBEPoint)): {
+        //             nodeInfo.setcBEPoint(index.nodeCBEPoint);
+        //         };
+        //     }
+
+        //     // let nodeElement = document.getElementById(index.nodeId);
+        //     // if (nodeElement != null) {
+        //     //     nodeElement.style.left = index.nodePosX;
+        //     //     nodeElement.style.top = index.nodePosY;
+        //     // }
+        // }
+
     })
 }
-function readNodePosInfoJSON()
-{
+function readNodePosInfoJSON() {
     if (isEmpty(localStorage.nodesInfo)) {
         return;
     }
@@ -287,7 +432,7 @@ function readNodePosInfoJSON()
         if (!isEmpty(nodeInfo)) {
 
 
-       
+
             let nodeElement = document.getElementById(index.nodeId);
             if (nodeElement != null) {
                 nodeElement.style.left = index.nodePosX;
@@ -422,12 +567,6 @@ class NodeInfo {
     getNodeContent() {
         return this.nodeContent;
     }
-    // setconnectSPoint(connectSPoint) {
-    //     this.connectSPoint = connectSPoint;
-    // }
-    // getconnectSPoint() {
-    //     return this.connectSPoint;
-    // }
 
     //节点连接对象目标点
 
@@ -569,19 +708,20 @@ function convertToNode(raw) {
             index.trim();
         });
         let nodeInfoItem = new NodeInfo();
-        nodeInfoItem.setNodeName(nodeinfoStrs[1]);
+        nodeInfoItem.setNodeName(nodeinfoStrs[1].replace(`-->`, ``).split(/<!--/)[0]);
+
         let nodeContentStr = ``;
         for (let i = 2; i < nodeinfoStrs.length; i++) {
             nodeContentStr += nodeinfoStrs[i];
         }
         nodeInfoItem.setNodeContent(nodeContentStr);
-        nodeInfoItem.setNodeId(defalutNodeId + nodeindex);
-
+        nodeInfoItem.setNodeId((nodeinfoStrs[1].replace(`-->`, ``).split(/<!--/)[1] || defalutNodeId + nodeindex).trim());
+        //  console.log((nodeinfoStrs[1].replace(`-->`,``).split(/<!--/)[1]||defalutNodeId + nodeindex).trim());
         if (isMain(arr[i])) {
             nodeInfoItem.setNodeType(`father`);
             // if(nowMain==``)
             // {
-            nowMain = nodeInfoItem;
+           
 
             // mainnodes.push(nodeInfoItem);
             // }
@@ -591,94 +731,108 @@ function convertToNode(raw) {
             nodeInfoItem.setNodeType(`son`);
 
         }
-        //判断下一行是否为空
-        if (arr[i + 1] !== undefined) {
-
-
-            switch (true) {
-
-                case (isMain(arr[i]) && isMain(arr[i + 1])):
-                    {
-
-                        setNodeFConnect(nodeInfoItem, defalutNodeId + (nodeindex + 1));
-
-                    }; break;
-                case (isMain(arr[i]) && isSub(arr[i + 1])):
-                    {
-
-                        setNodeSConnect(nodeInfoItem, defalutNodeId + (nodeindex + 1));
-
-                    }; break;
-                case (isSub(arr[i]) && isSub(arr[i + 1])):
-                    {
-
-                        setNodeSConnect(nodeInfoItem, defalutNodeId + (nodeindex + 1));
-
-                    }; break;
-                case (isSub(arr[i]) && isMain(arr[i + 1])):
-                    {
-                        if (i == 0) {
-
-                            setNodeFConnect(nodeInfoItem, defalutNodeId + (nodeindex + 1));
-                        }
-                        else if (nowMain != ``) {
-                            //    //最近的主节点
-                            //   nowMain.setfatherid(``);
-                            //    nowMain.setsonid(``);
-                            //    //目前遍历到的节点(副节点)
-                            //    nodeInfoItem.setRightCid(``);
-                            //连接的样式是统一的
-                            //设置一个节点的连接样式是从左到右的话，该节点所有连接样式都会变成从左到右
-                            //所以先将最近的主节点与第一个子节点进行分离，然后进行再连接，由第一个子节点发出
-                            setNodeFConnect(nowMain, defalutNodeId + (nodeindex + 1));
-                            //    setNodeSFConnect(nodeInfoItem,nowMain.getNodeId());
-                        }
-                        else {
-                            nodeInfoItem.setsonid(``);
-                            nodeInfoItem.setRightCid(``);
-                            nowMain.setfatherid(``);
-                        }
-
-
-
-                    }; break;
-            }
-        }
-        else //如果为空判断遍历到最后一行
-        {
-            switch (true) {
-                case (isMain(arr[i])):
-                    {
-                        nodeInfoItem.setsonid(``);
-                        nodeInfoItem.setRightCid(``);
-                        nowMain.setfatherid(``);
-                    }; break;
-                case (isSub(arr[i])):
-                    {
-                        nodeInfoItem.setsonid(``);
-                        nodeInfoItem.setRightCid(``);
-                        nowMain.setfatherid(``);
-                    }; break;
-            }
-        }
-
-        // if(i==0)
-        // {
-        //   nodeList=new NodeList(nodeInfoItem);
-        // }
-        // else
-        // {
-        //     nodeList.AddItem(nodeInfoItem);
-        // }
         nodes[i] = nodeInfoItem;
 
         nodeindex++;
-
-
     }
+    for (let i = 0; i < arr.length; i++) {
+        if (isMain(arr[i])) {
+           
+            // if(nowMain==``)
+            // {
+            nowMain = nodes[i];
+
+            // mainnodes.push(nodeInfoItem);
+            // }
+
+        }
+    //判断下一行是否为空
+    if (arr[i + 1] !== undefined) {
+
+      
+        switch (true) {
+
+            case (isMain(arr[i]) && isMain(arr[i + 1])):
+                {
+
+                    setNodeFConnect(nodes[i], nodes[i+1].getNodeId());
+
+                }; break;
+            case (isMain(arr[i]) && isSub(arr[i + 1])):
+                {
+
+                    setNodeSConnect(nodes[i], nodes[i+1].getNodeId());
+
+                }; break;
+            case (isSub(arr[i]) && isSub(arr[i + 1])):
+                {
+
+                    setNodeSConnect(nodes[i], nodes[i+1].getNodeId());
+
+                }; break;
+            case (isSub(arr[i]) && isMain(arr[i + 1])):
+                {
+                    if (i == 0) {
+
+                        setNodeFConnect(nodes[i], nodes[i+1].getNodeId());
+                    }
+                    else if (nowMain != ``) {
+                        //    //最近的主节点
+                        //   nowMain.setfatherid(``);
+                        //    nowMain.setsonid(``);
+                        //    //目前遍历到的节点(副节点)
+                        //    nodeInfoItem.setRightCid(``);
+                        //连接的样式是统一的
+                        //设置一个节点的连接样式是从左到右的话，该节点所有连接样式都会变成从左到右
+                        //所以先将最近的主节点与第一个子节点进行分离，然后进行再连接，由第一个子节点发出
+                        setNodeFConnect(nowMain, nodes[i+1].getNodeId());
+                        //    setNodeSFConnect(nodeInfoItem,nowMain.getNodeId());
+                    }
+                    else {
+                        nodes[i].setsonid(``);
+                        nodes[i].setRightCid(``);
+                        nowMain.setfatherid(``);
+                    }
+
+
+
+                }; break;
+        }
+    }
+    else //如果为空判断遍历到最后一行
+    {
+        switch (true) {
+            case (isMain(arr[i])):
+                {
+                    nodes[i].setsonid(``);
+                    nodes[i].setRightCid(``);
+                    nowMain.setfatherid(``);
+                }; break;
+            case (isSub(arr[i])):
+                {
+                    nodes[i].setsonid(``);
+                    nodes[i].setRightCid(``);
+                    nowMain.setfatherid(``);
+                }; break;
+        }
+    }
+    }
+
+    // if(i==0)
+    // {
+    //   nodeList=new NodeList(nodeInfoItem);
+    // }
+    // else
+    // {
+    //     nodeList.AddItem(nodeInfoItem);
+    // }
+   
 
     return nodes;
 }
+
+
+
 function loadMarkdown(raw) {
     localStorage.markdown = raw;
     location.reload();
@@ -1123,12 +1277,12 @@ class MarkdownNode {
 
                 };
 
-                jsPlumb.addEndpoint($node.id, {
-                    anchor: 'Left'
-                }, common);
-                jsPlumb.addEndpoint($node.id, {
-                    anchor: 'Right'
-                }, common);
+                // jsPlumb.addEndpoint($node.id, {
+                //     anchor: 'Left'
+                // }, common);
+                // jsPlumb.addEndpoint($node.id, {
+                //     anchor: 'Right'
+                // }, common);
                 jsPlumb.addEndpoint($node.id, {
                     anchor: 'Bottom'
                 }, common);
@@ -1139,7 +1293,9 @@ class MarkdownNode {
 
                     connectEvent(conn);
                 });
-
+                jsPlumb.bind(`connectionDetached`, function (conn, originalEvent) {
+                    connectDeleteEvent(conn);
+                });
                 jsPlumb.draggable($node.id, { containment: self.$nodeDrawing.id });
             });
         }
@@ -1173,6 +1329,9 @@ class MarkdownNode {
                 }, common);
                 jsPlumb.bind('connection', function (conn, originalEvent) {
                     connectEvent(conn);
+                });
+                jsPlumb.bind(`connectionDetached`, function (conn, originalEvent) {
+                    connectDeleteEvent(conn);
                 });
                 jsPlumb.draggable($node.id, { containment: self.$nodeDrawing.id });
             });
@@ -1237,7 +1396,7 @@ class MarkdownNode {
         this.$nodemainitem.appendChild($nodeContent);
         this.$nodemainitem.appendChild($nodeInput);
     };
- 
+
 
 }
 
@@ -1253,8 +1412,8 @@ const NodeDrawing = {
 
         // this.nodes=nodesInfos;
         let markdownNodes = new Array().fill(``);
-         //读取JSON字符串
-         readNodeInfoJSON();
+        //读取JSON字符串
+        readNodeInfoJSON();
         for (let index = 0; index < nodesInfos.length; index++) {
             markdownNodes[index] = new MarkdownNode(nodesInfos[index], this.$nodeDrawing);
         };
@@ -1313,6 +1472,9 @@ const NodeDrawing = {
         this.$savepointBtn.onclick = () => {
             nodesJSONStr = "";
             this.markdown = "";
+
+            let fnodeinfos = new Array();
+            let cnodeinfos = new Array();
             // let $$nodeContents=in$$(this.$node,`.nodeContent`);
             clearNodeInfoJSON();
             nodesInfos.forEach(index => {
@@ -1353,21 +1515,124 @@ const NodeDrawing = {
 
                 writeNodeInfoJSON(index);
                 if (index.getNodeType() != `father`) {
-                    this.markdown += `\n### ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
+                    cnodeinfos.push(index)
+                    // this.markdown += `\n### ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
                 }
                 else {
-                    this.markdown += `\n## ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
+                    //  this.markdown += `\n## ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
+                    fnodeinfos.push(index);
+
                 }
             }
             )
-            console.log(JSON.parse(localStorage.nodesInfo));
-            // let nodeBHead=nodesInfos.find(index=>index.getNodeId()== `node0`);;
+            // console.log(JSON.parse(localStorage.nodesInfo));
+            fnodeinfos.forEach(index => {
+                this.markdown += `\n## ${index.getNodeName().trim()} <!-- ${index.getNodeId()} -->\n${index.getNodeContent().trim()}`;
+                let sonNode = ``;
+                if (!isEmpty(index.getsonid())) {
+                    sonNode = cnodeinfos.find(i => i.getNodeId() == index.getsonid());
+                    console.log(index.getNodeId() + " " + index.getsonid());
+                    this.markdown += `\n### ${sonNode.getNodeName().trim()} <!-- ${sonNode.getNodeId()} --> \n${sonNode.getNodeContent().trim()}`;
+                }
+                while (!isEmpty(sonNode)) {
+                    if (!isEmpty(sonNode.getsonid())) {
+                        sonNode = cnodeinfos.find(i => i.getNodeId() == sonNode.getsonid());
+                        this.markdown += `\n### ${sonNode.getNodeName().trim()} <!-- ${sonNode.getNodeId()} -->  \n${sonNode.getNodeContent().trim()}`;
+                    }
+                    else {
+                        sonNode = null;
+                    }
+                }
+            })
+
+            // cnodeinfos.forEach(index => {
+            //     this.markdown += `\n### ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
+            //     console.log(index.getsonid());
+            // })
+
+            // let nodeHead=nodesInfos[0];
             // let nodeSHead=null;
-            // if(!isEmpty(nodesInfos[0].getsonid()))
+            // let nodeLHead=null;
+            // let nodeRHead=null;
+
+            // // if(!isEmpty(nodeHead))
+            // // {
+            // //     this.markdown+= markdownWrite(nodeHead);
+            // // }
+            // if(!isEmpty(nodeHead.getsonid()))
             // {
-            //      nodeSHead=nodesInfos.find(index=>index.getNodeId()== nodeBHead.getsonid());
+            //      nodeSHead=nodesInfos.find(index=>index.getNodeId()== nodeHead.getsonid());
+            //      this.markdown+= markdownWrite(nodeSHead);
+
+            //      console.log(nodeSHead);
+            // }
+            // while(!isEmpty(nodeSHead))
+            // {
+            //     // if (nodeSHead.getNodeType() != `father`) {
+            //     //     this.markdown += `\n### ${nodeSHead.getNodeName().trim()} \n${nodeSHead.getNodeContent().trim()}`;
+            //     // }
+            //     // else {
+            //     //     this.markdown += `\n## ${nodeSHead.getNodeName().trim()} \n${nodeSHead.getNodeContent().trim()}`;
+            //     // }
+
+            //     if(!isEmpty(nodeSHead.getsonid()))
+            //     {
+            //         nodeSHead=nodesInfos.find(index=>index.getNodeId()== nodeSHead.getsonid());
+            //         this.markdown+=markdownWrite(nodeSHead);
+            //     }
+            //     else
+            //     {
+            //         nodeSHead=null;
+            //     }
+
             // }
 
+            // if(!isEmpty(nodeHead.getLeftCid()))
+            // {
+            //     nodeLHead=nodesInfos.find(index=>index.getNodeId()== nodeHead.getLeftCid());
+            //     this.markdown+=markdownWrite(nodeLHead);
+            //     console.log(nodeLHead);
+            // }
+            // while(!isEmpty(nodeLHead))
+            // {
+            //     // if (nodeLHead.getNodeType() != `father`) {
+            //     //     this.markdown += `\n### ${nodeBHead.getNodeName().trim()} \n${nodeBHead.getNodeContent().trim()}`;
+            //     // }
+            //     // else {
+            //     //     this.markdown += `\n## ${nodeBHead.getNodeName().trim()} \n${nodeBHead.getNodeContent().trim()}`;
+            //     // }
+
+
+            //     if(!isEmpty(nodeLHead.getLeftCid()))
+            //     {
+            //         nodeLHead=nodesInfos.find(index=>index.getNodeId()== nodeLHead.getLeftCid());
+            //         this.markdown+=markdownWrite(nodeLHead);
+            //     }
+            //     else
+            //     {
+            //         nodeLHead=null;
+            //     }
+            // }
+            // if(!isEmpty(nodeHead.getRightCid()))
+            // {
+            //     nodeRHead=nodesInfos.find(index=>index.getNodeId()== nodeHead.getRightCid());
+            //     this.markdown+=markdownWrite(nodeRHead);
+            // }
+            // while(!isEmpty(nodeRHead))
+            // {
+
+            //     if(!isEmpty(nodeRHead.getRightCid()))
+            //     {
+            //        // nodeLHead=nodesInfos.find(index=>index.getNodeId()== nodeLHead.getLeftCid());
+            //         nodeRHead=nodesInfos.find(index=>index.getNodeId()== nodeRHead.getRightCid());
+            //         this.markdown+=markdownWrite(nodeRHead);
+            //     }
+            //     else
+            //     {
+            //         nodeRHead=null;
+            //     }
+
+            // }
             // while(nodeBHead!=null)
             // {
             //     if (nodeBHead.getNodeType() != `father`) {
@@ -1418,6 +1683,16 @@ const NodeDrawing = {
             // }
 
             localStorage.markdown = this.markdown;
+            // console.log(this.markdown);
+            // nodesInfos = convertToNode(this.markdown);
+            //    let newNodesPos=convertToNode(this.markdown);
+            //    for(let i=0;i<newNodesPos.length;i++)
+            //    {
+
+            //    }
+            // nodesInfos.forEach(index=>{
+            //     writeNodeInfoJSON(index);
+            // })
             location.reload();
         }
     }
