@@ -44,12 +44,7 @@ const set$ = (element, attributeName, attributeValue, text) => {
             }; break;
     }
 };
-//配置节点连接信息
-// const setNodeConnect = node => {
-//     node.setconnectId(defalutNodeId + (nodeindex + 1));
-//     node.setconnectSPoint(`Right`);
-//     node.setconnectEPoint(`Left`);
-// };
+
 //配置连接父节点信息
 const setNodeFConnect = (node, nodeid) => {
     node.setRightCid(nodeid);
@@ -74,12 +69,7 @@ const setNodeSConnect = (node, nodeid) => {
 
 }
 
-// // //配置子节点连接子节点信息
-// const setNodeSBConnect=node=>{
-//     node.setRightCid(defalutNodeId + (nodeindex + 1));
-//     node.setconnectSPoint(`Bottom`);
-//     node.setconnectEPoint(`Top`);
-// }
+
 
 const in$ = (f, s) => f.querySelector(s);
 const in$$ = (f, s) => f.querySelectorAll(s);
@@ -88,19 +78,7 @@ const isSub = str => (/^#{3}(?!#)/).test(str);
 const isEmpty = str => (str == null || str == `` || str === `undefined`);
 //node show jtk-endpoint-anchor jtk-draggable jtk-connected 元素连接之后的class
 //node show jtk-endpoint-anchor jtk-draggable 元素未连接的class
-// const setmisalignId=(idStr)=>{
 
-//     if(!isEmpty(nodesInfos))
-//     {
-//          nodesInfos.forEach(index=>{
-//             if(index.getNodeId()==idStr)
-//             {
-
-//             }
-//          })
-//     }
-//     return idStr;
-// }
 const isChange = (node1, node2) => {
     let b = 0;
     b = node1;
@@ -878,6 +856,76 @@ function animPlay($node, animName) {
     animSet($node, animName);
     animControl($node, "播放");
 }
+//图片上传
+const ImgUploader={
+    init(){
+        //图片上传组件
+        this.$fileInput=$(`#img-uploader`);
+       
+        //代码编辑组件
+        this.$textarea=$(`.editor textarea`);
+        //初始化
+        AV.init({
+            appId:"txADom1VtiCCJkIKjhX7kOtQ-gzGzoHsz",
+            appKey:"hjUu1qmtdcCDiuXVjpTls9Qs",
+            serverURLs:"https://txadom1v.lc-cn-n1-shared.com"
+        });
+        this.bind();
+    },
+    bind(){
+        let self=this;
+        //图片上传监听事件
+        this.$fileInput.onchange=function(){
+            //判断文件是否上传
+            if(this.files.length>0)
+            {
+                //获取上传文件
+                let localFile=this.files[0];
+                console.log(localFile);
+                if(localFile.size/1048576>2)
+                {
+                    alert(`文件不能超过2M`);
+                    return;
+                }
+                self.insertText(`![上传中,进度0%]()`);
+                //读取文件
+                let avFile=new AV.File(encodeURI(localFile.name),localFile);
+                //文件上传
+                avFile.save({
+                    keepFileName:true,
+                    //进度条变化监听函数
+                    onprogress(progress){
+                      self.insertText(`![上传中,进度${progress.percent}%]`);
+                    }
+                }).then(file=>{
+                    console.log(`文件保存完成`);
+                    console.log(file);
+                    //上传之后，将生成的url图片拼接成markdown
+                    let text=`![${file.attributes.name}](${file.attributes.url}?imageView2/0/w/800/h/400)`;
+                    //插入markdown语句
+                    self.insertText(text);
+                }).catch(err=>console.log(err))
+            }
+        }
+    },
+    insertText(text=``){
+        let $textarea=this.$textarea;
+        //光标所选部分得开端位置
+        let start=$textarea.selectionStart;
+        //光标所选部分得结尾位置
+        let end=$textarea.selectionEnd;
+        //更改之前得文本内容
+        let oldText=$textarea.value;
+        //修改组件文本内容为插入之后得文本
+        $textarea.value=`${oldText.substring(0,start)}${text} ${oldText.substring(end)}`;
+        //聚焦
+        $textarea.focus();
+        //选中组件中插入得文本
+        $textarea.setSelectionRange(start,start+text.length);
+
+
+    }
+}
 //侧边菜单栏
 const Sliderbar = {
     init() {
@@ -896,6 +944,7 @@ const Sliderbar = {
         this.$sliderbarRedactContent = $(`.sliderbarContent.redact`);
         this.$sliderbarNodeContent = $(`.sliderbarContent.node`);
         this.$sliderbardownloadContent = $(`.sliderbarContent.download`);
+        this.$sliderbarspeakerContent=$(`.sliderbarContent.speaker`);
         this.isShrink = true;
         this.isShowBottom = false;
         this.bind();
@@ -950,6 +999,12 @@ const Sliderbar = {
                         this.$sliderbarNodeContent.classList.remove(`show`);
                         this.$sliderbardownloadContent.classList.add(`show`);
                     }; break;
+                    case `talker`:{
+                        this.$sliderbarThemeContent.classList.remove(`show`);
+                        this.$sliderbarRedactContent.classList.remove(`show`);
+                        this.$sliderbarspeakerContent.classList.add(`show`);
+                        this.$sliderbardownloadContent.classList.remove(`show`);
+                    };break;
                 }
                 this.$$sliderbarItem.forEach(index => { index.classList.remove(`seleced`) });
                 index.classList.add(`seleced`);
@@ -1158,52 +1213,18 @@ class MarkdownNode {
         if (isEmpty(nodeInfo.getNodeContent())) {
             nodeInfo.setNodeContent(``);
         }
-        // if (this.nodeType == `son`) {
-        // if (isEmpty(nodeInfo.getsonid()) ||
-        //     isEmpty(nodeInfo.getconnectEPoint()) ||
-        //     isEmpty(nodeInfo.getconnectSPoint())) {
-        //     this.isConnect = false;
-        // }
-        // else {
-
-        //this.connectBortherid=nodeInfo.getRightCid();
-        // this.connectId = nodeInfo.getconnectId();
-        // console.log(`当前节点ID为${this.nodeID},连接ID为${this.connectId}`);
-        // this.connectStartPoint = nodeInfo.getconnectSPoint();
-        // this.connectEndPoint = nodeInfo.getconnectEPoint();
-        // this.isConnect = true;
-        // }
-        //}
-        // else if (this.nodeType == `father`) {
-        // if (isEmpty(nodeInfo.getsonid()) ||
-        //     isEmpty(nodeInfo.getRightCid())||
-        //     isEmpty(nodeInfo.getconnectEPoint()) ||
-        //     isEmpty(nodeInfo.getconnectSPoint())) {
-        //     this.isConnect = false;
-        // }
-        // else {
-        // this.connectSonid=nodeInfo.getsonid();
-        // this.connectBortherid=nodeInfo.getRightCid();
+  
         this.connectLeftid = nodeInfo.getLeftCid();
         this.connectRightid = nodeInfo.getRightCid();
         this.connectTopid = nodeInfo.getfatherid();
         this.connectBottomid = nodeInfo.getsonid();
-        // this.connectId = nodeInfo.getconnectId();
-        // console.log(`当前节点ID为${this.nodeID},连接ID为${this.connectId}`);
-        // this.connectStartPoint = nodeInfo.getconnectSPoint();
+
         this.cLEndPoint = nodeInfo.getcLEPoint();
         this.cREndPoint = nodeInfo.getcREPoint();
         this.cTEndPoint = nodeInfo.getcTEPoint();
         this.cBEndPoint = nodeInfo.getcBEPoint();
         this.isConnect = true;
-        // }
-        // }
-
-        // if (isEmpty(nodeInfo.getconnectId()) ||
-        //     isEmpty(nodeInfo.getconnectEPoint()) ||
-        //     isEmpty(nodeInfo.getconnectSPoint())) {
-        //     this.isConnect = false;
-        // }
+  
 
         this.nodePosX = nodeInfo.nodePosX;
         this.nodePosY = nodeInfo.nodePosY;
@@ -1413,10 +1434,6 @@ class MarkdownNode {
         $nodeContent.appendChild($nodeContentOption4);
         $nodeInput.value = contentStr;
         $nodeContent.value = contentType;
-
-        // $nodeInput.oninput=()=>{
-        //     this.nodeInputEvent();
-        // };
         this.$nodemainitem.appendChild($nodeContent);
         this.$nodemainitem.appendChild($nodeInput);
     };
@@ -1443,23 +1460,10 @@ const NodeDrawing = {
         };
         readNodePosInfoJSON();
         markdownNodes.forEach(index => {
-
-            // if(index.nodeType==`son`)
-            // {
-            //     nodeConnect(index,index.connectBortherid);
-            //     nodeConnect(index,index.connectSonid);
-            //     console.log(`触发分类`);
-            // }
-            // else
-            //  {
             nodeConnect(index, `Left`, index.cLEndPoint, index.connectLeftid);
             nodeConnect(index, `Right`, index.cREndPoint, index.connectRightid);
             nodeConnect(index, `Top`, index.cTEndPoint, index.connectTopid);
             nodeConnect(index, `Bottom`, index.cBEndPoint, index.connectBottomid);
-            // nodeConnect(index,index.connectBortherid);
-            // nodeConnect(index,index.connectSonid);
-            //  }
-
         });
 
         //默认节点名
@@ -1549,10 +1553,6 @@ const NodeDrawing = {
                 }
             }
             )
-            // fnodeinfos.forEach(index=>{
-            //     console.log(index);
-            // });
-            // console.log(fnodeinfos[0].getNodeName());
             let leftNode = fnodeinfos[0];
             let rightNode=fnodeinfos[0];
             this.markdown += `\n## ${leftNode.getNodeName().trim()} <!-- ${leftNode.getNodeId()} -->\n${leftNode.getNodeContent().trim()}`;
@@ -1580,176 +1580,9 @@ const NodeDrawing = {
                     rightNode=null;
                 }
             }
-            // console.log(JSON.parse(localStorage.nodesInfo));
-            // fnodeinfos.forEach(index => {
-            //     this.markdown += `\n## ${index.getNodeName().trim()} <!-- ${index.getNodeId()} -->\n${index.getNodeContent().trim()}`;
-                // let sonNode = ``;
-                // if (!isEmpty(index.getsonid())) {
-                //     sonNode = cnodeinfos.find(i => i.getNodeId() == index.getsonid());
-
-                //     this.markdown += `\n### ${sonNode.getNodeName().trim()} <!-- ${sonNode.getNodeId()} --> \n${sonNode.getNodeContent().trim()}`;
-                // }
-                // while (!isEmpty(sonNode)) {
-                //     if (!isEmpty(sonNode.getsonid())) {
-                //         sonNode = cnodeinfos.find(i => i.getNodeId() == sonNode.getsonid());
-                //         this.markdown += `\n### ${sonNode.getNodeName().trim()} <!-- ${sonNode.getNodeId()} -->  \n${sonNode.getNodeContent().trim()}`;
-                //     }
-                //     else {
-                //         sonNode = null;
-                //     }
-                // }
-            //     this.sonNodefind(index, cnodeinfos);
-            // })
-
-            // cnodeinfos.forEach(index => {
-            //     this.markdown += `\n### ${index.getNodeName().trim()} \n${index.getNodeContent().trim()}`;
-            //     console.log(index.getsonid());
-            // })
-
-            // let nodeHead=nodesInfos[0];
-            // let nodeSHead=null;
-            // let nodeLHead=null;
-            // let nodeRHead=null;
-
-            // // if(!isEmpty(nodeHead))
-            // // {
-            // //     this.markdown+= markdownWrite(nodeHead);
-            // // }
-            // if(!isEmpty(nodeHead.getsonid()))
-            // {
-            //      nodeSHead=nodesInfos.find(index=>index.getNodeId()== nodeHead.getsonid());
-            //      this.markdown+= markdownWrite(nodeSHead);
-
-            //      console.log(nodeSHead);
-            // }
-            // while(!isEmpty(nodeSHead))
-            // {
-            //     // if (nodeSHead.getNodeType() != `father`) {
-            //     //     this.markdown += `\n### ${nodeSHead.getNodeName().trim()} \n${nodeSHead.getNodeContent().trim()}`;
-            //     // }
-            //     // else {
-            //     //     this.markdown += `\n## ${nodeSHead.getNodeName().trim()} \n${nodeSHead.getNodeContent().trim()}`;
-            //     // }
-
-            //     if(!isEmpty(nodeSHead.getsonid()))
-            //     {
-            //         nodeSHead=nodesInfos.find(index=>index.getNodeId()== nodeSHead.getsonid());
-            //         this.markdown+=markdownWrite(nodeSHead);
-            //     }
-            //     else
-            //     {
-            //         nodeSHead=null;
-            //     }
-
-            // }
-
-            // if(!isEmpty(nodeHead.getLeftCid()))
-            // {
-            //     nodeLHead=nodesInfos.find(index=>index.getNodeId()== nodeHead.getLeftCid());
-            //     this.markdown+=markdownWrite(nodeLHead);
-            //     console.log(nodeLHead);
-            // }
-            // while(!isEmpty(nodeLHead))
-            // {
-            //     // if (nodeLHead.getNodeType() != `father`) {
-            //     //     this.markdown += `\n### ${nodeBHead.getNodeName().trim()} \n${nodeBHead.getNodeContent().trim()}`;
-            //     // }
-            //     // else {
-            //     //     this.markdown += `\n## ${nodeBHead.getNodeName().trim()} \n${nodeBHead.getNodeContent().trim()}`;
-            //     // }
-
-
-            //     if(!isEmpty(nodeLHead.getLeftCid()))
-            //     {
-            //         nodeLHead=nodesInfos.find(index=>index.getNodeId()== nodeLHead.getLeftCid());
-            //         this.markdown+=markdownWrite(nodeLHead);
-            //     }
-            //     else
-            //     {
-            //         nodeLHead=null;
-            //     }
-            // }
-            // if(!isEmpty(nodeHead.getRightCid()))
-            // {
-            //     nodeRHead=nodesInfos.find(index=>index.getNodeId()== nodeHead.getRightCid());
-            //     this.markdown+=markdownWrite(nodeRHead);
-            // }
-            // while(!isEmpty(nodeRHead))
-            // {
-
-            //     if(!isEmpty(nodeRHead.getRightCid()))
-            //     {
-            //        // nodeLHead=nodesInfos.find(index=>index.getNodeId()== nodeLHead.getLeftCid());
-            //         nodeRHead=nodesInfos.find(index=>index.getNodeId()== nodeRHead.getRightCid());
-            //         this.markdown+=markdownWrite(nodeRHead);
-            //     }
-            //     else
-            //     {
-            //         nodeRHead=null;
-            //     }
-
-            // }
-            // while(nodeBHead!=null)
-            // {
-            //     if (nodeBHead.getNodeType() != `father`) {
-            //         this.markdown += `\n### ${nodeBHead.getNodeName().trim()} \n${nodeBHead.getNodeContent().trim()}`;
-            //     }
-            //     else {
-            //         this.markdown += `\n## ${nodeBHead.getNodeName().trim()} \n${nodeBHead.getNodeContent().trim()}`;
-            //     }
-            //     while(nodeSHead!=null)
-            //     {
-            //         if (nodeSHead.getNodeType() != `father`) {
-            //             this.markdown += `\n### ${nodeBHead.getNodeName().trim()} \n${nodeBHead.getNodeContent().trim()}`;
-            //         }
-            //         else {
-            //             this.markdown += `\n## ${nodeBHead.getNodeName().trim()} \n${nodeBHead.getNodeContent().trim()}`;
-            //         }
-            //         try{
-            //             nodeSHead=nodesInfos.find(index=>index.getNodeId()== nodeSHead.getsonid());
-            //         }catch(error)
-            //         {
-            //             nodeSHead=null;
-            //         }
-
-            //     }
-            //     try {
-            //         nodeBHead=nodesInfos.find(index=>index.getNodeId()== nodeBHead.getRightCid());
-            //     } catch (error) {
-            //         nodeBHead=null;
-            //     }
-
-            // }
-            // switch(true)
-            // {
-
-            // case(nodeHead.nodeType==`father`):
-            // {
-            //     let currentSNode=nodeHead;
-            //     while(nodeHead!=null)
-            //     {
-
-            //     }
-            // };break;
-            // case(nodeHead.nodeType==`son`):
-            // {
-
-            // };break;
-
-            // }
-
             localStorage.markdown = this.markdown;
             console.log(this.markdown);
-            // nodesInfos = convertToNode(this.markdown);
-            //    let newNodesPos=convertToNode(this.markdown);
-            //    for(let i=0;i<newNodesPos.length;i++)
-            //    {
-
-            //    }
-            // nodesInfos.forEach(index=>{
-            //     writeNodeInfoJSON(index);
-            // })
-               location.reload();
+            location.reload();
         }
     },
     //节点遍历

@@ -10,31 +10,30 @@
     <link rel="stylesheet" href="dist/reveal.css">
      <!-- <link rel="stylesheet" href="dist/theme/solarized.css"> -->
     <link rel="stylesheet" href="plugin/highlight/monokai.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/c/font_3597715_o6s683guirh.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/c/font_3597715_njmjgx35ue.css">
     <link rel="stylesheet" href="PageCss/index.css">
-    <!-- <script>
-        var link=document.createElement(`link`);
-        link.rel=`stylesheet`;
-        link.type=`text/css`;
-        link.href=window.location.search.match(/print-pdf/gi)?'dist/print/pdf.css' : 'dist/print/paper.css';
-        document.getElementsByTagName(`head`)[0].appendChild(link);
-    </script> -->
+    
 </head>
 
 <body>
     <div class="control">
-        <span class="iconfont icon-shezhi"></span>
+        <span class="iconfont icon-set"></span>
     </div>
     <div class="menu">
-        <span class="iconfont icon-guanbi"></span>
+        <span class="iconfont icon-close"></span>
         <div class="detail">
-            <dlv class="tab active"><span class="iconfont icon-wenbenbianji"></span>内容编辑</dlv>
-            <div class="tab"><span class="iconfont icon-zhuti"></span>主题与特效</div>
-            <div class="tab"><span class="iconfont icon-xiazai"></span>下载PDF</div>
+            <dlv class="tab active"><span class="iconfont icon-redact"></span>内容编辑</dlv>
+            <div class="tab"><span class="iconfont icon-theme"></span>主题与特效</div>
+            <div class="tab"><span class="iconfont icon-download"></span>下载PDF</div>
+            <div class="tab"><span class="iconfont icon-Talker"></span>演讲者模式</div>
             <div class="content">
                 <div class="header">编辑</div>
                 <div class="body editor">
                     <textarea></textarea>
+                    <div class="uploader">
+                        <input type="file" id="img-uploader" accept="image/*">
+                        <label for="img-uploader">点击上传图片(支持.png,.jpg,.gif,最大2M)</label>
+                    </div>
                     <div>
                         <button class="button-save">保存</button>
                     </div>
@@ -113,6 +112,12 @@
                   <button>下载PDF</button>
                </div>
             </div>
+            <div class="content">
+                <div class="header">演讲者模式</div>
+                <div class="body speaker">
+                   <p>按 <strong>S</strong>键,开启演讲者模式</p>
+                </div>
+             </div>
         </div>
     </div>
     <div class="reveal">
@@ -123,7 +128,12 @@
     <script src="plugin/notes/notes.js"></script>
     <script src="plugin/markdown/markdown.js"></script>
     <script src="plugin/highlight/highlight.js"></script>
+      <!-- 存储服务 -->
+      <script src="//cdn.jsdelivr.net/npm/leancloud-storage@4.2.0/dist/av-min.js"></script>
+      <!-- 即时通讯服务 -->
+      <script src="//cdn.jsdelivr.net/npm/leancloud-realtime@5.0.0-beta.3/dist/realtime-browser.min.js"></script>
     <script src="PageJs/index.js"></script>
+    
     <script>
         // More info about initialization & config:
         // - https://revealjs.com/initialization/

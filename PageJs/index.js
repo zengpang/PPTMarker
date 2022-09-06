@@ -88,9 +88,9 @@ function convert(raw) {
 const Menu = {
     init() {
         console.log(`菜单初始化`);
-        this.$settingIcon = $(`.control .icon-shezhi`);
+        this.$settingIcon = $(`.control .icon-set`);
         this.$menu = $(`.menu`);
-        this.$closeIcon = $(`.menu .icon-guanbi`);
+        this.$closeIcon = $(`.menu .icon-close`);
         this.$$tabs = $$(`.menu .tab`);
         this.$$contents = $$(`.menu .content`);
         this.bind();
@@ -113,6 +113,76 @@ const Menu = {
             this.$$contents.forEach($node => $node.classList.remove(`active`));
             this.$$contents[index].classList.add(`active`);
         })
+
+    }
+}
+//图片上传
+const ImgUploader={
+    init(){
+        //图片上传组件
+        this.$fileInput=$(`#img-uploader`);
+       
+        //代码编辑组件
+        this.$textarea=$(`.editor textarea`);
+        //初始化
+        AV.init({
+            appId:"txADom1VtiCCJkIKjhX7kOtQ-gzGzoHsz",
+            appKey:"hjUu1qmtdcCDiuXVjpTls9Qs",
+            serverURLs:"https://txadom1v.lc-cn-n1-shared.com"
+        });
+        this.bind();
+    },
+    bind(){
+        let self=this;
+        //图片上传监听事件
+        this.$fileInput.onchange=function(){
+            //判断文件是否上传
+            if(this.files.length>0)
+            {
+                //获取上传文件
+                let localFile=this.files[0];
+                console.log(localFile);
+                if(localFile.size/1048576>2)
+                {
+                    alert(`文件不能超过2M`);
+                    return;
+                }
+                self.insertText(`![上传中,进度0%]()`);
+                //读取文件
+                let avFile=new AV.File(encodeURI(localFile.name),localFile);
+                //文件上传
+                avFile.save({
+                    keepFileName:true,
+                    //进度条变化监听函数
+                    onprogress(progress){
+                      self.insertText(`![上传中,进度${progress.percent}%]`);
+                    }
+                }).then(file=>{
+                    console.log(`文件保存完成`);
+                    console.log(file);
+                    //上传之后，将生成的url图片拼接成markdown
+                    let text=`![${file.attributes.name}](${file.attributes.url}?imageView2/0/w/800/h/400)`;
+                    //插入markdown语句
+                    self.insertText(text);
+                }).catch(err=>console.log(err))
+            }
+        }
+    },
+    insertText(text=``){
+        let $textarea=this.$textarea;
+        //光标所选部分得开端位置
+        let start=$textarea.selectionStart;
+        //光标所选部分得结尾位置
+        let end=$textarea.selectionEnd;
+        //更改之前得文本内容
+        let oldText=$textarea.value;
+        //修改组件文本内容为插入之后得文本
+        $textarea.value=`${oldText.substring(0,start)}${text} ${oldText.substring(end)}`;
+        //聚焦
+        $textarea.focus();
+        //选中组件中插入得文本
+        $textarea.setSelectionRange(start,start+text.length);
+
 
     }
 }
@@ -234,7 +304,7 @@ const App = {
         [...arguments].forEach(Modlue => Modlue.init());
     }
 }
-App.init(Menu, Editor,Theme,Print);
+App.init(Menu,ImgUploader, Editor,Theme,Print);
 // function loadMarkdown(raw) {
 //     localStorage.markdown = raw;
 //     location.reload();

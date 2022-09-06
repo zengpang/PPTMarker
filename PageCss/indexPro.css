@@ -633,3 +633,15 @@ body {
         opacity: 0;
     }
 }
+.sliderbarContent.redact .editor [type=file]
+{
+    display: none;
+}
+.sliderbarContent.redact
+{
+    color: #747c7c;
+}
+.sliderbarContent.redact .uploader label
+{
+   font-size: 16px;
+}

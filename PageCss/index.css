@@ -54,14 +54,14 @@ button:hover{
 .menu.open{
     transform: translateX(0);
 }
-.menu .icon-guanbi{
+.menu .icon-close{
     position: absolute;
     right: 10px;
     top: 10px;
     cursor: pointer;
     transform: color .3s;
 }
-.menu .icon-guanbi:hover{
+.menu .icon-close:hover{
     color: #fff;
 }
 .menu .detail{
@@ -147,4 +147,8 @@ button:hover{
 .menu .theme .transition,
 .menu .theme .align{
     margin-top: 20px;
+}
+.menu .editor [type=file]
+{
+    display: none;
 }
