@@ -45,29 +45,7 @@ const set$ = (element, attributeName, attributeValue, text) => {
     }
 };
 
-//配置连接父节点信息
-const setNodeFConnect = (node, nodeid) => {
-    node.setRightCid(nodeid);
-    // node.setRightCid(defalutNodeId + (nodeindex + 1));
 
-    // node.setconnectSPoint(`Right`);
-    node.setcREPoint(`Left`);
-
-
-};
-//配置子节点连接父节点
-const setNodeSFConnect = (node, nodeid) => {
-    node.setfatherid(nodeid);
-    // node.setconnectSPoint(`Top`);
-    node.setcTEPoint(`Bottom`);
-}
-//配置连接子节点信息
-const setNodeSConnect = (node, nodeid) => {
-    node.setsonid(nodeid);
-    // node.setconnectSPoint(`Bottom`);
-    node.setcBEPoint(`Top`);
-
-}
 
 // // //配置子节点连接子节点信息
 // const setNodeSBConnect=node=>{
@@ -361,59 +339,7 @@ function writeNodeInfoJSON(nodeinfo) {
 function clearNodeInfoJSON() {
     localStorage.nodesInfo = ``;
 }
-//读取JSON格式的节点位置数据
-function readNodeInfoJSON() {
-    if (isEmpty(localStorage.nodesInfo)) {
-        return;
-    }
 
-    let nodesPosInfo = JSON.parse(localStorage.nodesInfo);
-
-    nodesPosInfo.forEach(index => {
-        let nodeid = index.nodeId;
-        let nodeInfo = nodesInfos.find(index => index.getNodeId() == nodeid);
-
-        // if (!isEmpty(nodeInfo)) {
-
-
-        //     switch (true) {
-        //         case (isEmpty(nodeInfo.getLeftCid()) && !isEmpty(index.nodeLeftid)): {
-        //             nodeInfo.setLeftCid(index.nodeLeftid);
-
-        //         };
-        //         case (isEmpty(nodeInfo.getRightCid()) && !isEmpty(index.nodeRightid)): {
-        //             nodeInfo.setRightCid(index.nodeRightid);
-        //         };
-        //         case (isEmpty(nodeInfo.getfatherid()) && !isEmpty(index.nodeFid)): {
-        //             nodeInfo.setfatherid(index.nodeFid);
-        //         };
-        //         case (isEmpty(nodeInfo.getsonid()) && !isEmpty(index.nodeSid)): {
-        //             nodeInfo.setsonid(index.nodeSid);
-        //         }
-        //         case (isEmpty(nodeInfo.getcLEPoint()) && !isEmpty(index.nodeCLEPoint)): {
-        //             nodeInfo.setcLEPoint(index.nodeCLEPoint);
-        //         };
-        //         case (isEmpty(nodeInfo.getcREPoint()) && !isEmpty(index.nodeCREPoint)): {
-        //             nodeInfo.setcREPoint(index.nodeCREPoint);
-
-        //         };
-        //         case (isEmpty(nodeInfo.getcTEPoint()) && !isEmpty(index.nodeCTEPoint)): {
-        //             nodeInfo.setcTEPoint(index.nodeCTEPoint);
-        //         };
-        //         case (isEmpty(nodeInfo.getcBEPoint()) && !isEmpty(index.nodeCBEPoint)): {
-        //             nodeInfo.setcBEPoint(index.nodeCBEPoint);
-        //         };
-        //     }
-
-        //     // let nodeElement = document.getElementById(index.nodeId);
-        //     // if (nodeElement != null) {
-        //     //     nodeElement.style.left = index.nodePosX;
-        //     //     nodeElement.style.top = index.nodePosY;
-        //     // }
-        // }
-
-    })
-}
 function readNodePosInfoJSON() {
     if (isEmpty(localStorage.nodesInfo)) {
         return;
@@ -563,6 +489,7 @@ const Sliderbar = {
         this.$sliderbarRedactContent = $(`.sliderbarContent.redact`);
         this.$sliderbarspeakerContent=$(`.sliderbarContent.speaker`);
         this.$sliderbardownloadContent = $(`.sliderbarContent.download`);
+  
         this.isShrink = true;
         this.isShowBottom = false;
         this.bind();
@@ -589,6 +516,7 @@ const Sliderbar = {
                 else {
                     this.$sliderbarItemBottom.style.transition = `all .3s`;
                 }
+              
                 switch (index.dataset.itemname) {
                     case `theme`: {
                         this.$sliderbarRedactContent.classList.remove(`show`);
@@ -598,6 +526,7 @@ const Sliderbar = {
                     }; break;
                     //编辑器
                     case `redact`: {
+                        console.log(this.$sliderbarRedactContent.classList);
                         this.$sliderbardownloadContent.classList.remove(`show`);
                         this.$sliderbarThemeContent.classList.remove(`show`);
                         this.$sliderbarspeakerContent.classList.remove(`show`);
